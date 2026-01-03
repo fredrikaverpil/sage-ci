@@ -51,6 +51,10 @@ all: $(sagefile)
 git-diff-check: $(sagefile)
 	@$(sagefile) GitDiffCheck
 
+.PHONY: go-build
+go-build: $(sagefile)
+	@$(sagefile) GoBuild
+
 .PHONY: go-format
 go-format: $(sagefile)
 	@$(sagefile) GoFormat
