@@ -47,6 +47,10 @@ clean-sage:
 all: $(sagefile)
 	@$(sagefile) All
 
+.PHONY: generate-gha
+generate-gha: $(sagefile)
+	@$(sagefile) GenerateGHA
+
 .PHONY: git-diff-check
 git-diff-check: $(sagefile)
 	@$(sagefile) GitDiffCheck
@@ -106,11 +110,3 @@ run-synced: $(sagefile)
 .PHONY: run-synced-serial
 run-synced-serial: $(sagefile)
 	@$(sagefile) RunSyncedSerial
-
-.PHONY: sage-ci-sync
-sage-ci-sync: $(sagefile)
-	@$(sagefile) SageCISync
-
-.PHONY: sync-gha
-sync-gha: $(sagefile)
-	@$(sagefile) SyncGHA

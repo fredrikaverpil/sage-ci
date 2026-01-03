@@ -17,8 +17,20 @@ jobs:
         with:
           go-version: stable
 
-      - name: Run sage-ci sync
-        run: go run github.com/fredrikaverpil/sage-ci/cmd/sage-ci@latest sync
+      - name: Update sage-tools
+	    run: |
+		  go get -u github.com/fredrikaverpil/sage-tools
+		  go mod tidy
+		working-directory: .sage
+
+	  - name: Re-generate Sage targets
+	    run: go run github.com/fredrikaverpil/sage-tools/cmd/sage-ci@latest sync
+
+      - name: Make sage targets
+	    run: make sage
+
+      - name: Re-generate GitHub Actions workflows
+        run: make generate-gha
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
@@ -29,7 +41,7 @@ jobs:
             Automated update from sage-ci sync.
 
             This PR updates:
-            - `.sage/sagefile.go` (if present)
-            - `.github/workflows/` files
+            - `.sage/synced.go`
+            - `.github/workflows/`
           branch: chore/sage-ci-sync
           delete-branch: true

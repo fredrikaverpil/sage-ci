@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"os/exec"
-	"strings"
 
 	"github.com/fredrikaverpil/sage-ci/tools/sggolangcilint"
 	"github.com/fredrikaverpil/sage-ci/tools/sgstylua"
@@ -15,38 +13,49 @@ import (
 	"go.einride.tech/sage/tools/sguv"
 )
 
-// SageCISync runs sage-ci sync to update synced.gen.go and GitHub workflows.
-func SageCISync(ctx context.Context) error {
-	if shouldSkipTarget("SageCISync", "") {
-		return nil
-	}
-	sg.Logger(ctx).Println("running sage-ci sync...")
+// --- Orchestration ---
 
-	// Use exec.CommandContext directly to avoid sg.Command's logger which sets Stdout/Stderr.
-	cmd := exec.CommandContext(ctx, "go", "list", "-m", "-f", "{{.Version}}", "github.com/fredrikaverpil/sage-ci")
-	output, err := cmd.Output()
-	if err != nil {
-		// If go list fails, we might not be in a module or it's not a dependency.
-		// Fallback to local run if possible.
-		sg.Logger(ctx).Println("warning: go list failed, falling back to local run")
-	}
-	version := strings.TrimSpace(string(output))
-
-	var runArgs []string
-	if version == "" {
-		runArgs = []string{"run", "./cmd/sage-ci", "sync"}
-	} else {
-		runArgs = []string{"run", fmt.Sprintf("github.com/fredrikaverpil/sage-ci/cmd/sage-ci@%s", version), "sync"}
-	}
-
-	return sg.Command(ctx, "go", runArgs...).Run()
+// RunSyncedSerial runs all mutating targets serially.
+func RunSyncedSerial(ctx context.Context) error {
+	sg.SerialDeps(ctx,
+		GoModTidy,
+		GoFormat,
+		GoLint,
+		PythonSync,
+		PythonFormat,
+		PythonLint,
+		LuaFormat,
+	)
+	return nil
 }
 
-// SyncGHA syncs GitHub workflows.
-func SyncGHA(ctx context.Context) error {
-	if shouldSkipTarget("SyncGHA", "") {
-		return nil
+// RunSynced runs all non-mutating targets in parallel.
+func RunSynced(ctx context.Context) error {
+	sg.Deps(ctx,
+		GoTest,
+		GoVulncheck,
+		PythonMypy,
+		PythonTest,
+	)
+	return nil
+}
+
+func shouldSkipTarget(target, module string) bool {
+	skippedModules, ok := skipTargets[target]
+	if !ok {
+		return false
 	}
+	for _, m := range skippedModules {
+		if m == "*" || m == module {
+			return true
+		}
+	}
+	return false
+}
+
+// --- Generate targets ---
+
+func GenerateGHA(ctx context.Context) error {
 	return workflows.Sync(cfg)
 }
 
@@ -249,45 +258,4 @@ func GitDiffCheck(ctx context.Context) error {
 	}
 	_ = sg.Command(ctx, "git", "diff").Run()
 	return fmt.Errorf("uncommitted changes detected")
-}
-
-// --- Orchestration ---
-
-// RunSyncedSerial runs all mutating targets serially.
-func RunSyncedSerial(ctx context.Context) error {
-	sg.SerialDeps(ctx,
-		SageCISync,
-		GoModTidy,
-		GoFormat,
-		GoLint,
-		PythonSync,
-		PythonFormat,
-		PythonLint,
-		LuaFormat,
-	)
-	return nil
-}
-
-// RunSynced runs all non-mutating targets in parallel.
-func RunSynced(ctx context.Context) error {
-	sg.Deps(ctx,
-		GoTest,
-		GoVulncheck,
-		PythonMypy,
-		PythonTest,
-	)
-	return nil
-}
-
-func shouldSkipTarget(target, module string) bool {
-	skippedModules, ok := skipTargets[target]
-	if !ok {
-		return false
-	}
-	for _, m := range skippedModules {
-		if m == "*" || m == module {
-			return true
-		}
-	}
-	return false
 }

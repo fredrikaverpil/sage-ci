@@ -17,8 +17,21 @@ jobs:
         with:
           go-version: stable
 
-      - name: Run sage-ci sync
-        run: go run github.com/fredrikaverpil/sage-ci/cmd/sage-ci@latest sync
+      - name: Update sage-tools
+	    run: |
+		  go get -u github.com/fredrikaverpil/sage-tools
+		  go mod tidy
+		working-directory: .sage
+
+	  - name: Re-generate Sage targets
+	    # TODO: if running in sage-tools repo, run `./cmd/sage-ci/main.go sync` instead
+	    run: go run github.com/fredrikaverpil/sage-tools/cmd/sage-ci@latest sync
+
+      - name: Make sage targets
+	    run: make sage
+
+      - name: Re-generate GitHub Actions workflows
+        run: make generate-gha
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
