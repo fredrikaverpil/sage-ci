@@ -107,6 +107,10 @@ run-synced: $(sagefile)
 run-synced-serial: $(sagefile)
 	@$(sagefile) RunSyncedSerial
 
+.PHONY: sage-ci-sync
+sage-ci-sync: $(sagefile)
+	@$(sagefile) SageCISync
+
 .PHONY: sync-gha
 sync-gha: $(sagefile)
 	@$(sagefile) SyncGHA

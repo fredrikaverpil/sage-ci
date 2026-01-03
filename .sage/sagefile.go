@@ -11,6 +11,8 @@ var cfg = workflows.Config{
 	GoModules: []string{"."},
 }
 
+var skipTargets = map[string][]string{}
+
 func main() {
 	sg.GenerateMakefiles(
 		sg.Makefile{

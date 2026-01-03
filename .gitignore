@@ -1,2 +1,8 @@
 # built binary
 /sage-ci
+
+# sage
+/.sage/.gitignore
+/.sage/tools/
+/.sage/bin/
+/.sage/build/
