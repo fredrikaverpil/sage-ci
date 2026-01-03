@@ -1,0 +1,279 @@
+run:
+  timeout: 10m
+  build-tags:
+    - wireinject
+
+issues:
+  fix: false
+  exclude-dirs:
+    - .git
+    - node_modules
+
+linters:
+  disable-all: true
+  enable:
+    # Check that code does not contain non-ASCII identifiers.
+    # [fast: true, auto-fix: false]
+    - asciicheck
+
+    # Check whether HTTP response body is closed successfully.
+    # [fast: false, auto-fix: false]
+    - bodyclose
+
+    # Copyloopvar is a linter detects places where loop variables are copied.
+    # [fast: false, auto-fix: false]
+    - copyloopvar
+
+    # Check for two durations multiplied together.
+    # [fast: false, auto-fix: false]
+    - durationcheck
+
+    # Check for unchecked errors. Unchecked errors can be critical bugs in some cases.
+    # [fast: false, auto-fix: false]
+    - errcheck
+
+    # Check that sentinel errors are prefixed with the `Err` and error types are suffixed with the `Error`.
+    # [fast: false, auto-fix: false]
+    - errname
+
+    # Find code that will cause problems with the error wrapping scheme introduced in Go 1.13.
+    # [fast: false, auto-fix: false]
+    - errorlint
+
+    # Detects functions from golang.org/x/exp/ that can be replaced by std functions.
+    # [fast: ?, auto-fix: true]
+    - exptostd
+
+    # Check package import order and make it always deterministic.
+    # [fast: true, auto-fix: true]
+    - gci
+
+    # Check that no init functions are present in Go code.
+    # [fast: true, auto-fix: false]
+    - gochecknoinits
+
+    # Check for bugs, performance and style issues.
+    # [fast: false, auto-fix: false]
+    - gocritic
+
+    # Check if comments end in a period.
+    # [fast: true, auto-fix: true]
+    - godot
+
+    # Check whether code was gofumpt-ed.
+    # [fast: true, auto-fix: true]
+    - gofumpt
+
+    # Manage the use of 'replace', 'retract', and 'excludes' directives in go.mod.
+    # [fast: true, auto-fix: false]
+    - gomoddirectives
+
+    # Allow and block list linter for direct Go module dependencies. This is different from depguard where there are different block types for example version constraints and module recommendations.
+    # [fast: true, auto-fix: false]
+    - gomodguard
+
+    # Check that printf-like functions are named with `f` at the end.
+    # [fast: true, auto-fix: false]
+    - goprintffuncname
+
+    # Check for code that can be simplified.
+    # [fast: false, auto-fix: false]
+    - gosimple
+
+    # Report suspicious constructs, such as Printf calls whose arguments do not align with the format string.
+    # [fast: false, auto-fix: false]
+    - govet
+
+    # Detect when assignments to existing variables are not used.
+    # [fast: true, auto-fix: false]
+    - ineffassign
+
+    # Report long lines.
+    # [fast: true, auto-fix: false]
+    - lll
+
+    # Find slice declarations with non-zero initial length.
+    # [fast: false, auto-fix: false]
+    - makezero
+
+    # Find commonly misspelled English words in comments.
+    # [fast: true, auto-fix: true]
+    - misspell
+
+    # Find naked returns in functions greater than a specified function length.
+    # [fast: true, auto-fix: false]
+    - nakedret
+
+    # Find the code that returns nil even if it checks that the error is not nil.
+    # [fast: false, auto-fix: false]
+    - nilerr
+
+    # Report ill-formed or insufficient nolint directives.
+    # [fast: true, auto-fix: false]
+    - nolintlint
+
+    # Find slice declarations that could potentially be preallocated.
+    # [fast: true, auto-fix: false]
+    - prealloc
+
+    # Find code that shadows one of Go's predeclared identifiers.
+    # [fast: true, auto-fix: false]
+    - predeclared
+
+    # Check Prometheus metrics naming via promlint.
+    # [fast: true, auto-fix: false]
+    - promlinter
+
+    # Reports direct reads from proto message fields when getters should be used.
+    # [fast: false, auto-fix: true]
+    - protogetter
+
+    # Check whether Err of rows is checked successfully.
+    # [fast: false, auto-fix: false]
+    - rowserrcheck
+
+    # Check that sql.Rows and sql.Stmt are closed.
+    # [fast: false, auto-fix: false]
+    - sqlclosecheck
+
+    # Go vet on steroids, applying a ton of static analysis checks.
+    # [fast: false, auto-fix: false]
+    - staticcheck
+
+    # A replacement for golint.
+    # [fast: false, auto-fix: false]
+    - stylecheck
+
+    # Detect inappropriate usage of t.Parallel() method in your Go test codes.
+    # [fast: false, auto-fix: false]
+    - tparallel
+
+    # Parses and type-checks Go code.
+    # [fast: false, auto-fix: false]
+    - typecheck
+
+    # Remove unnecessary type conversions.
+    # [fast: false, auto-fix: false]
+    - unconvert
+
+    # Check Go code for unused constants, variables, functions and types.
+    # [fast: false, auto-fix: false]
+    - unused
+
+    # Find wasted assignment statements.
+    # [fast: false, auto-fix: false]
+    - wastedassign
+
+    # Detect leading and trailing whitespace.
+    # [fast: true, auto-fix: true]
+    - whitespace
+
+    # Check that no global variables exist.
+    # [fast: true, auto-fix: false]
+    - gochecknoglobals
+
+    # Inspect source code for security problems.
+    # [fast: false, auto-fix: false]
+    - gosec
+
+    # Find sending http request without context.Context.
+    # [fast: false, auto-fix: false]
+    - noctx
+
+    # Drop-in replacement of golint.
+    # [fast: false, auto-fix: false]
+    - revive
+
+    # Check for pass []any as any in variadic func(...any).
+    # [fast: false, auto-fix: false]
+    - asasalint
+
+    # Check for dangerous unicode character sequences.
+    # [fast: true, auto-fix: false]
+    - bidichk
+
+    # Check types passed to the json encoding functions.
+    # [fast: false, auto-fix: false]
+    - errchkjson
+
+    # Check for the possibility to use variables/constants from the Go standard library.
+    # [fast: true, auto-fix: false]
+    - usestdlibvars
+
+    # Checks for mistakes with OpenTelemetry/Census spans.
+    # [fast: false, auto-fix: false]
+    - spancheck
+
+    # Ensure consistent code style when using log/slog.
+    - sloglint
+linters-settings:
+  gomodguard:
+    blocked:
+      modules:
+        - github.com/sirupsen/logrus:
+            recommendations:
+              - go.uber.org/zap
+            reason: "Use Zap for logging."
+        - github.com/rs/zerolog:
+            recommendations:
+              - go.uber.org/zap
+            reason: "Use Zap for logging."
+        - github.com/pkg/errors:
+            recommendations:
+              - errors
+              - fmt
+            reason: "Use the standard library error packages."
+        - golang.org/x/xerrors:
+            recommendations:
+              - errors
+              - fmt
+            reason: "Use the standard library error packages."
+        - github.com/golang/protobuf:
+            recommendations:
+              - google.golang.org/protobuf
+            reason: "The protobuf v1 module is deprecated."
+        - github.com/stretchr/testify:
+            recommendations:
+              - gotest.tools/v3
+            reason: "More reliably supports protobuf messages."
+
+  gofumpt:
+    extra-rules: true
+
+  gosec:
+    excludes:
+      # Flags for potentially-unsafe casting of ints. Prone to lots of false positives.
+      - G115
+
+  lll:
+    line-length: 120
+    tab-width: 1
+
+  misspell:
+    locale: US
+    ignore-words:
+      - cancelled
+      - cancelling
+      - analyses # allow analyses as a plural form of analysis
+
+  prealloc:
+    simple: true
+    range-loops: true
+    for-loops: true
+
+  protogetter:
+    skip-any-generated: true
+
+  staticcheck:
+    checks: [all]
+
+  stylecheck:
+    checks: [all]
+
+  errorlint:
+    # Don't enforce %w to minimize implicit interface leakage.
+    # https://github.com/dwmkerr/hacker-laws#hyrums-law-the-law-of-implicit-interfaces
+    errorf: false
+
+  gomoddirectives:
+    replace-local: true
