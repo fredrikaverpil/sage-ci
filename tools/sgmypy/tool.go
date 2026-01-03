@@ -14,7 +14,7 @@ import (
 const name = "mypy"
 
 // renovate: datasource=pypi depName=mypy
-const version = "1.19.0"
+const version = "1.19.1"
 
 // Command returns an *exec.Cmd for mypy via uv tool run.
 func Command(ctx context.Context, args ...string) *exec.Cmd {
