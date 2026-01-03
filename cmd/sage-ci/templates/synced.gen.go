@@ -17,6 +17,9 @@ import (
 
 // SyncGHA syncs GitHub workflows.
 func SyncGHA(ctx context.Context) error {
+	if shouldSkipTarget("SyncGHA", "") {
+		return nil
+	}
 	return workflows.Sync(cfg)
 }
 
@@ -25,6 +28,9 @@ func SyncGHA(ctx context.Context) error {
 // GoModTidy runs go mod tidy.
 func GoModTidy(ctx context.Context) error {
 	for _, module := range cfg.GoModules {
+		if shouldSkipTarget("GoModTidy", module) {
+			continue
+		}
 		sg.Logger(ctx).Printf("running go mod tidy in %s...", module)
 		cmd := sg.Command(ctx, "go", "mod", "tidy", "-v")
 		cmd.Dir = sg.FromGitRoot(module)
@@ -38,6 +44,9 @@ func GoModTidy(ctx context.Context) error {
 // GoLint runs golangci-lint with --fix.
 func GoLint(ctx context.Context) error {
 	for _, module := range cfg.GoModules {
+		if shouldSkipTarget("GoLint", module) {
+			continue
+		}
 		sg.Logger(ctx).Printf("running golangci-lint --fix in %s...", module)
 		cmd := sggolangcilint.Command(ctx, "run", "--fix", "--allow-parallel-runners", "./...")
 		cmd.Dir = sg.FromGitRoot(module)
@@ -51,6 +60,9 @@ func GoLint(ctx context.Context) error {
 // GoFormat applies Go formatting using gofmt.
 func GoFormat(ctx context.Context) error {
 	for _, module := range cfg.GoModules {
+		if shouldSkipTarget("GoFormat", module) {
+			continue
+		}
 		sg.Logger(ctx).Printf("applying gofmt in %s...", module)
 		cmd := sg.Command(ctx, "gofmt", "-w", ".")
 		cmd.Dir = sg.FromGitRoot(module)
@@ -64,6 +76,9 @@ func GoFormat(ctx context.Context) error {
 // GoTest runs Go tests.
 func GoTest(ctx context.Context) error {
 	for _, module := range cfg.GoModules {
+		if shouldSkipTarget("GoTest", module) {
+			continue
+		}
 		sg.Logger(ctx).Printf("running go test in %s...", module)
 		cmd := sggo.TestCommand(ctx)
 		cmd.Dir = sg.FromGitRoot(module)
@@ -77,6 +92,9 @@ func GoTest(ctx context.Context) error {
 // GoVulncheck runs govulncheck.
 func GoVulncheck(ctx context.Context) error {
 	for _, module := range cfg.GoModules {
+		if shouldSkipTarget("GoVulncheck", module) {
+			continue
+		}
 		sg.Logger(ctx).Printf("running govulncheck in %s...", module)
 		cmd := sg.Command(ctx, "go", "run", "golang.org/x/vuln/cmd/govulncheck@latest", "./...")
 		cmd.Dir = sg.FromGitRoot(module)
@@ -92,6 +110,9 @@ func GoVulncheck(ctx context.Context) error {
 // PythonSync runs uv sync to install dependencies.
 func PythonSync(ctx context.Context) error {
 	for _, module := range cfg.PythonModules {
+		if shouldSkipTarget("PythonSync", module) {
+			continue
+		}
 		sg.Logger(ctx).Printf("running uv sync in %s...", module)
 		cmd := sguv.Command(ctx, "sync", "--all-groups")
 		cmd.Dir = sg.FromGitRoot(module)
@@ -106,6 +127,9 @@ func PythonSync(ctx context.Context) error {
 func PythonFormat(ctx context.Context) error {
 	sg.Deps(ctx, PythonSync)
 	for _, module := range cfg.PythonModules {
+		if shouldSkipTarget("PythonFormat", module) {
+			continue
+		}
 		sg.Logger(ctx).Printf("applying ruff format in %s...", module)
 		cmd := sguv.Command(ctx, "run", "ruff", "format", ".")
 		cmd.Dir = sg.FromGitRoot(module)
@@ -120,6 +144,9 @@ func PythonFormat(ctx context.Context) error {
 func PythonLint(ctx context.Context) error {
 	sg.Deps(ctx, PythonSync)
 	for _, module := range cfg.PythonModules {
+		if shouldSkipTarget("PythonLint", module) {
+			continue
+		}
 		sg.Logger(ctx).Printf("running ruff check --fix in %s...", module)
 		cmd := sguv.Command(ctx, "run", "ruff", "check", "--fix", ".")
 		cmd.Dir = sg.FromGitRoot(module)
@@ -134,6 +161,9 @@ func PythonLint(ctx context.Context) error {
 func PythonMypy(ctx context.Context) error {
 	sg.Deps(ctx, PythonSync)
 	for _, module := range cfg.PythonModules {
+		if shouldSkipTarget("PythonMypy", module) {
+			continue
+		}
 		sg.Logger(ctx).Printf("running mypy in %s...", module)
 		cmd := sguv.Command(ctx, "run", "mypy", ".")
 		cmd.Dir = sg.FromGitRoot(module)
@@ -148,6 +178,9 @@ func PythonMypy(ctx context.Context) error {
 func PythonTest(ctx context.Context) error {
 	sg.Deps(ctx, PythonSync)
 	for _, module := range cfg.PythonModules {
+		if shouldSkipTarget("PythonTest", module) {
+			continue
+		}
 		sg.Logger(ctx).Printf("running pytest in %s...", module)
 		cmd := sguv.Command(ctx, "run", "pytest", "-v")
 		cmd.Dir = sg.FromGitRoot(module)
@@ -163,6 +196,9 @@ func PythonTest(ctx context.Context) error {
 // LuaFormat applies Lua formatting using stylua.
 func LuaFormat(ctx context.Context) error {
 	for _, module := range cfg.LuaModules {
+		if shouldSkipTarget("LuaFormat", module) {
+			continue
+		}
 		sg.Logger(ctx).Printf("applying stylua format in %s...", module)
 		cmd := sgstylua.Command(ctx, ".")
 		cmd.Dir = sg.FromGitRoot(module)
@@ -214,4 +250,17 @@ func RunSynced(ctx context.Context) error {
 		PythonTest,
 	)
 	return nil
+}
+
+func shouldSkipTarget(target, module string) bool {
+	skippedModules, ok := skipTargets[target]
+	if !ok {
+		return false
+	}
+	for _, m := range skippedModules {
+		if m == "*" || m == module {
+			return true
+		}
+	}
+	return false
 }

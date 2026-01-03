@@ -31,6 +31,12 @@ var cfg = workflows.Config{
 	OutputDir: "",
 }
 
+// skipTargets lists sage target names to skip in RunSynced and RunSyncedSerial.
+// Key: Target name (e.g. "GoTest").
+// Value: List of modules to skip. Use "*" or match the module name.
+// Example: map[string][]string{"GoLint": {"tools"}}
+var skipTargets = map[string][]string{}
+
 func main() {
 	sg.GenerateMakefiles(
 		sg.Makefile{
