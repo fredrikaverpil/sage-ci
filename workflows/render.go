@@ -1,0 +1,146 @@
+package workflows
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/fs"
+	"os"
+	"path/filepath"
+	"slices"
+	"strings"
+	"text/template"
+	"time"
+)
+
+type templateData struct {
+	// Metadata
+	GeneratedBy string
+	Timestamp   string
+
+	// Module paths
+	GoModules     []string
+	PythonModules []string
+	LuaModules    []string
+
+	// Version matrices
+	GoVersions     []string
+	PythonVersions []string
+	OSVersions     []string
+
+	// Computed
+	HasGo     bool
+	HasPython bool
+	HasLua    bool
+}
+
+func render(cfg Config) error {
+	data := templateData{
+		GeneratedBy:    "sage-ci", // TODO: Add version
+		Timestamp:      time.Now().Format(time.RFC3339),
+		GoModules:      cfg.GoModules,
+		PythonModules:  cfg.PythonModules,
+		LuaModules:     cfg.LuaModules,
+		GoVersions:     cfg.GoVersions,
+		PythonVersions: cfg.PythonVersions,
+		OSVersions:     cfg.OSVersions,
+		HasGo:          len(cfg.GoModules) > 0,
+		HasPython:      len(cfg.PythonModules) > 0,
+		HasLua:         len(cfg.LuaModules) > 0,
+	}
+
+	funcMap := template.FuncMap{
+		"toJSON": func(v any) (string, error) {
+			b, err := json.Marshal(v)
+			if err != nil {
+				return "", fmt.Errorf("marshal to JSON: %w", err)
+			}
+			return string(b), nil
+		},
+	}
+	// Walk the templates directory
+	err := fs.WalkDir(templatesFS, "templates", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+
+		// Skip hidden files or non-templates if any
+		if !strings.HasSuffix(path, ".tmpl") {
+			return nil
+		}
+
+		// Read template content
+		tmplContent, err := templatesFS.ReadFile(path)
+		if err != nil {
+			return fmt.Errorf("read template %s: %w", path, err)
+		}
+
+		// Parse template
+		t, err := template.New(filepath.Base(path)).Funcs(funcMap).Parse(string(tmplContent))
+		if err != nil {
+			return fmt.Errorf("parse template %s: %w", path, err)
+		}
+
+		// Render
+		var buf bytes.Buffer
+		if err := t.Execute(&buf, data); err != nil {
+			return fmt.Errorf("execute template %s: %w", path, err)
+		}
+
+		// Determine output filename:
+		// - generic/*.yml.tmpl -> *.yml
+		// - <ecosystem>/*.yml.tmpl -> <ecosystem>-*.yml
+		relPath, err := filepath.Rel("templates", path)
+		if err != nil {
+			return fmt.Errorf("get relative path for %s: %w", path, err)
+		}
+		parts := strings.Split(relPath, string(os.PathSeparator))
+
+		var fileName string
+		if len(parts) == 2 {
+			category := parts[0]
+			name := strings.TrimSuffix(parts[1], ".tmpl")
+
+			if category == "generic" {
+				fileName = name
+			} else {
+				fileName = fmt.Sprintf("%s-%s", category, name)
+			}
+		} else {
+			// Fallback
+			fileName = strings.TrimSuffix(filepath.Base(path), ".tmpl")
+		}
+
+		// Check for skip
+		// If the workflow name (fileName without extension) is in cfg.Skip
+		baseName := strings.TrimSuffix(fileName, ".yml")
+		if slices.Contains(cfg.Skip, baseName) {
+			return nil
+		}
+
+		// Skip ecosystem-specific workflows if no modules configured
+		if (parts[0] == "go" && !data.HasGo) ||
+			(parts[0] == "python" && !data.HasPython) ||
+			(parts[0] == "lua" && !data.HasLua) {
+			return nil
+		}
+
+		outputPath := filepath.Join(cfg.OutputDir, fileName)
+
+		// Ensure output dir exists
+		if err := os.MkdirAll(filepath.Dir(outputPath), 0o755); err != nil {
+			return fmt.Errorf("create output dir: %w", err)
+		}
+
+		if err := os.WriteFile(outputPath, buf.Bytes(), 0o644); err != nil {
+			return fmt.Errorf("write workflow %s: %w", outputPath, err)
+		}
+
+		return nil
+	})
+
+	return err
+}
