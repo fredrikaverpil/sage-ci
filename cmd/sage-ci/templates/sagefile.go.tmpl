@@ -50,9 +50,14 @@ func main() {
 
 // All is the default target. Customize this to run the targets you need.
 func All(ctx context.Context) error {
-	targets.RunSerial(ctx, cfg)
-	targets.RunParallel(ctx, cfg)
-	return targets.GitDiffCheck(ctx)
+	if err := targets.RunSerial(ctx, cfg); err != nil {
+		return err
+	}
+	if err := targets.RunParallel(ctx, cfg); err != nil {
+		return err
+	}
+	sg.Deps(ctx, targets.GitDiffCheck)
+	return nil
 }
 
 // GenerateWorkflows regenerates CI workflows for the configured platform.
