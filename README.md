@@ -1,7 +1,12 @@
 # sage-ci (powered by [Sage](https://github.com/einride/sage) 🌿)
 
-This repo holds tools and configurations which I want synced across several
-projects.
+This repo holds opinionated tools and workflows which I want synced across
+several projects. Features include:
+
+- Opt-in ecosystem support for Go, Lua, Python and CI workflows
+- Project Makefile for running commands in the project
+- Sage-powered tools declaration
+- CI workflow templates
 
 ## Quickstart
 
