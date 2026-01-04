@@ -37,8 +37,3 @@ func GoVulncheck(ctx context.Context) error {
 func GenerateWorkflows(ctx context.Context) error {
 	return targets.GenerateWorkflows(cfg)
 }
-
-// UpdateSageCi updates the sage-ci dependency and regenerates Makefiles and workflows.
-func UpdateSageCi(ctx context.Context) error {
-	return targets.UpdateSageCi(ctx, cfg)
-}
