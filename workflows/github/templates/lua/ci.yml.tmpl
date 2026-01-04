@@ -22,6 +22,6 @@ jobs:
           go-version: stable
           cache: false
       - name: format-check
-        run: make lua-format
+        run: make run target=lua-format
         working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
 {{- end }}

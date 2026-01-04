@@ -49,7 +49,7 @@ func main() {
 }
 
 // All is the default target. Customize this to run the targets you need.
-func All(ctx context.Context) error
+func All(ctx context.Context) error {
 	targets.RunSerial(ctx, cfg, skip)
 	targets.RunParallel(ctx, cfg, skip)
 	return targets.GitDiffCheck(ctx)
@@ -63,4 +63,10 @@ func GenerateWorkflows(ctx context.Context) error {
 // UpdateSageCi updates the sage-ci dependency and regenerates Makefiles and workflows.
 func UpdateSageCi(ctx context.Context) error {
 	return targets.UpdateSageCi(ctx, cfg)
+}
+
+// Run executes a target by name (e.g., "go-format", "python-lint").
+// Usage: make run target=go-format
+func Run(ctx context.Context, target string) error {
+	return targets.Run(ctx, cfg, skip, target)
 }

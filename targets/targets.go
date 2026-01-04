@@ -5,11 +5,61 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/fredrikaverpil/sage-ci/config"
 	"github.com/fredrikaverpil/sage-ci/workflows/github"
 	"go.einride.tech/sage/sg"
 )
+
+// ErrUnknownTarget is returned when Run is called with an unrecognized target name.
+var ErrUnknownTarget = fmt.Errorf("unknown target")
+
+// Run executes a target by name. The target parameter uses kebab-case naming
+// (e.g., "go-format", "python-lint") which maps to the corresponding function
+// (e.g., GoFormat, PythonLint).
+//
+// Available targets:
+//   - go-mod-tidy, go-format, go-lint, go-test, go-vulncheck
+//   - python-sync, python-format, python-lint, python-mypy, python-test
+//   - lua-format
+//   - run-serial, run-parallel
+func Run(ctx context.Context, cfg config.Config, skip SkipTargets, target string) error {
+	switch strings.ToLower(target) {
+	// Go targets.
+	case "go-mod-tidy":
+		return GoModTidy(ctx, cfg, skip)
+	case "go-format":
+		return GoFormat(ctx, cfg, skip)
+	case "go-lint":
+		return GoLint(ctx, cfg, skip)
+	case "go-test":
+		return GoTest(ctx, cfg, skip)
+	case "go-vulncheck":
+		return GoVulncheck(ctx, cfg, skip)
+	// Python targets.
+	case "python-sync":
+		return PythonSync(ctx, cfg, skip)
+	case "python-format":
+		return PythonFormat(ctx, cfg, skip)
+	case "python-lint":
+		return PythonLint(ctx, cfg, skip)
+	case "python-mypy":
+		return PythonMypy(ctx, cfg, skip)
+	case "python-test":
+		return PythonTest(ctx, cfg, skip)
+	// Lua targets.
+	case "lua-format":
+		return LuaFormat(ctx, cfg, skip)
+	// Orchestration targets.
+	case "run-serial":
+		return RunSerial(ctx, cfg, skip)
+	case "run-parallel":
+		return RunParallel(ctx, cfg, skip)
+	default:
+		return fmt.Errorf("%w: %s", ErrUnknownTarget, target)
+	}
+}
 
 // SkipTargets maps target names to modules that should be skipped.
 // Key: Target name (e.g. "GoTest").

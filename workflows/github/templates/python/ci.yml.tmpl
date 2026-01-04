@@ -23,7 +23,7 @@ jobs:
           cache: false
       - uses: astral-sh/setup-uv@v5
       - name: lint
-        run: make python-lint
+        run: make run target=python-lint
         working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
 
   format:
@@ -40,7 +40,7 @@ jobs:
           cache: false
       - uses: astral-sh/setup-uv@v5
       - name: format-check
-        run: make python-format
+        run: make run target=python-format
         working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
 
   type:
@@ -57,7 +57,7 @@ jobs:
           cache: false
       - uses: astral-sh/setup-uv@v5
       - name: mypy
-        run: make python-mypy
+        run: make run target=python-mypy
         working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
 
   test:
@@ -78,6 +78,6 @@ jobs:
         with:
           python-version: ${{ "{{" }} matrix.python {{ "}}" }}
       - name: pytest
-        run: make python-test
+        run: make run target=python-test
         working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
 {{- end }}

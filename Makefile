@@ -55,6 +55,13 @@ build-sage-ci: $(sagefile)
 generate-workflows: $(sagefile)
 	@$(sagefile) GenerateWorkflows
 
+.PHONY: run
+run: $(sagefile)
+ifndef target
+	 $(error missing argument target="...")
+endif
+	@$(sagefile) Run "$(target)"
+
 .PHONY: update-sage-ci
 update-sage-ci: $(sagefile)
 	@$(sagefile) UpdateSageCi
