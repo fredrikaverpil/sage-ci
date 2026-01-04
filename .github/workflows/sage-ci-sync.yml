@@ -17,17 +17,18 @@ jobs:
         with:
           go-version: stable
 
-      - name: Update sage-tools
-	    run: |
-		  go get -u github.com/fredrikaverpil/sage-tools
+      - name: Update sage-ci
+		run: |
+		  go get -u github.com/fredrikaverpil/sage-ci
 		  go mod tidy
-		working-directory: .sage
+	    working-directory: .sage
 
 	  - name: Re-generate Sage targets
-	    run: go run github.com/fredrikaverpil/sage-tools/cmd/sage-ci@latest sync
+		# TODO: if running in sage-ci repo, run `go run cmd/sage-ci/main.go sync` instead
+		run: go run github.com/fredrikaverpil/sage-ci/cmd/sage-ci@latest sync
 
       - name: Make sage targets
-	    run: make sage
+		run: make sage
 
       - name: Re-generate GitHub Actions workflows
         run: make generate-gha
