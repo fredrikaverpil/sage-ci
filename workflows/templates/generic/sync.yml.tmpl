@@ -17,13 +17,19 @@ jobs:
         with:
           go-version: stable
 
-      - name: Sync sage-ci
+      - name: Update sage-ci dependency
+        run: |
+          if [ -d ".sage" ]; then
+            cd .sage && go get -u github.com/fredrikaverpil/sage-ci@latest && go mod tidy
+          fi
+
+      - name: Sync workflows
         run: |
           if [ -d "cmd/sage-ci" ]; then
-		    # run in sage-ci repo
+            # run in sage-ci repo
             go run ./cmd/sage-ci sync
           else
-		    # run in any other repo
+            # run in any other repo
             go run github.com/fredrikaverpil/sage-ci/cmd/sage-ci@latest sync
           fi
 
@@ -39,7 +45,7 @@ jobs:
             Automated update from sage-ci.
 
             This PR updates:
-            - `.sage/targets.gen.go`
+            - `.sage/go.mod` (sage-ci dependency)
             - `.github/workflows/`
             - `Makefile`
           branch: chore/sage-ci-sync

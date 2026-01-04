@@ -47,69 +47,17 @@ clean-sage:
 all: $(sagefile)
 	@$(sagefile) All
 
-.PHONY: generate-gha
-generate-gha: $(sagefile)
-	@$(sagefile) GenerateGHA
-
-.PHONY: git-diff-check
-git-diff-check: $(sagefile)
-	@$(sagefile) GitDiffCheck
-
 .PHONY: go-build
 go-build: $(sagefile)
 	@$(sagefile) GoBuild
 
-.PHONY: go-format
-go-format: $(sagefile)
-	@$(sagefile) GoFormat
+.PHONY: run-parallel
+run-parallel: $(sagefile)
+	@$(sagefile) RunParallel
 
-.PHONY: go-lint
-go-lint: $(sagefile)
-	@$(sagefile) GoLint
-
-.PHONY: go-mod-tidy
-go-mod-tidy: $(sagefile)
-	@$(sagefile) GoModTidy
-
-.PHONY: go-test
-go-test: $(sagefile)
-	@$(sagefile) GoTest
-
-.PHONY: go-vulncheck
-go-vulncheck: $(sagefile)
-	@$(sagefile) GoVulncheck
-
-.PHONY: lua-format
-lua-format: $(sagefile)
-	@$(sagefile) LuaFormat
-
-.PHONY: python-format
-python-format: $(sagefile)
-	@$(sagefile) PythonFormat
-
-.PHONY: python-lint
-python-lint: $(sagefile)
-	@$(sagefile) PythonLint
-
-.PHONY: python-mypy
-python-mypy: $(sagefile)
-	@$(sagefile) PythonMypy
-
-.PHONY: python-sync
-python-sync: $(sagefile)
-	@$(sagefile) PythonSync
-
-.PHONY: python-test
-python-test: $(sagefile)
-	@$(sagefile) PythonTest
-
-.PHONY: run-synced
-run-synced: $(sagefile)
-	@$(sagefile) RunSynced
-
-.PHONY: run-synced-serial
-run-synced-serial: $(sagefile)
-	@$(sagefile) RunSyncedSerial
+.PHONY: run-serial
+run-serial: $(sagefile)
+	@$(sagefile) RunSerial
 
 .PHONY: sync
 sync: $(sagefile)
