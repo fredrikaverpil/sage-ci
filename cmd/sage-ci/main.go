@@ -89,6 +89,6 @@ func runInit(args []string) error {
 	}
 
 	fmt.Println("Edit .sage/sagefile.go to configure your project, then run:")
-	fmt.Println("  go run ./.sage")
+	fmt.Println("  cd .sage && go run ./...")
 	return nil
 }

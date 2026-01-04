@@ -41,7 +41,7 @@ You can add custom targets to `sagefile.go` or create additional `.go` files in
 
 ```bash
 # Generate the initial Makefile
-go run ./.sage
+cd .sage && go run ./...
 
 # Generate targets and workflows
 make update-sage-ci
@@ -115,7 +115,7 @@ func MyTarget(ctx context.Context) error {
 }
 ```
 
-Run `go run ./.sage` to regenerate the Makefile, then use `make my-target`.
+Run `cd .sage && go run ./...` to regenerate the Makefile, then use `make my-target`.
 
 ## Adding to core sage-ci
 
