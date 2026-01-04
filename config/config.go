@@ -97,3 +97,25 @@ func (s SkipTargets) ShouldSkip(target, module string) bool {
 	}
 	return false
 }
+
+// IsFullySkipped returns true if the target is skipped for all given modules.
+func (s SkipTargets) IsFullySkipped(target string, modules []string) bool {
+	skippedModules, ok := s[target]
+	if !ok {
+		return false
+	}
+	for _, m := range skippedModules {
+		if m == "*" {
+			return true
+		}
+	}
+	if len(modules) == 0 {
+		return false
+	}
+	for _, module := range modules {
+		if !s.ShouldSkip(target, module) {
+			return false
+		}
+	}
+	return true
+}

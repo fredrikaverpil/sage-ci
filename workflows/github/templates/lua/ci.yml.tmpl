@@ -8,6 +8,7 @@ on:
   pull_request:
 
 jobs:
+{{- if not .SkipLuaFormat }}
   format:
     runs-on: ubuntu-latest
     strategy:
@@ -23,3 +24,4 @@ jobs:
       - name: format-check
         run: make lua-format
         working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
+{{- end }}

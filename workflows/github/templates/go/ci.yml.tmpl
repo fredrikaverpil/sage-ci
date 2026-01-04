@@ -8,6 +8,7 @@ on:
   pull_request:
 
 jobs:
+{{- if not .SkipGoLint }}
   lint:
     runs-on: ubuntu-latest
     strategy:
@@ -23,7 +24,9 @@ jobs:
       - name: golangci-lint
         run: make go-lint
         working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
+{{- end }}
 
+{{- if not .SkipGoFormat }}
   format:
     runs-on: ubuntu-latest
     strategy:
@@ -39,7 +42,9 @@ jobs:
       - name: format-check
         run: make go-format
         working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
+{{- end }}
 
+{{- if not .SkipGoTest }}
   test:
     strategy:
       fail-fast: false
@@ -57,7 +62,9 @@ jobs:
       - name: test
         run: make go-test
         working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
+{{- end }}
 
+{{- if not .SkipGoVulncheck }}
   vulncheck:
     runs-on: ubuntu-latest
     strategy:
@@ -73,3 +80,4 @@ jobs:
       - name: govulncheck
         run: make go-vulncheck
         working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
+{{- end }}

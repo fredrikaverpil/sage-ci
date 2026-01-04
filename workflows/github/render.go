@@ -29,6 +29,17 @@ type templateData struct {
 	GoVersions     []string
 	PythonVersions []string
 	OSVersions     []string
+
+	// Skipped targets (fully skipped for all modules)
+	SkipGoTest       bool
+	SkipGoLint       bool
+	SkipGoFormat     bool
+	SkipGoVulncheck  bool
+	SkipPythonTest   bool
+	SkipPythonLint   bool
+	SkipPythonFormat bool
+	SkipPythonMypy   bool
+	SkipLuaFormat    bool
 }
 
 func render(cfg config.Config) error {
@@ -41,6 +52,17 @@ func render(cfg config.Config) error {
 		GoVersions:     cfg.GoVersions,
 		PythonVersions: cfg.PythonVersions,
 		OSVersions:     cfg.OSVersions,
+
+		// Check if targets are fully skipped
+		SkipGoTest:       cfg.SkipTargets.IsFullySkipped("GoTest", cfg.GoModules),
+		SkipGoLint:       cfg.SkipTargets.IsFullySkipped("GoLint", cfg.GoModules),
+		SkipGoFormat:     cfg.SkipTargets.IsFullySkipped("GoFormat", cfg.GoModules),
+		SkipGoVulncheck:  cfg.SkipTargets.IsFullySkipped("GoVulncheck", cfg.GoModules),
+		SkipPythonTest:   cfg.SkipTargets.IsFullySkipped("PythonTest", cfg.PythonModules),
+		SkipPythonLint:   cfg.SkipTargets.IsFullySkipped("PythonLint", cfg.PythonModules),
+		SkipPythonFormat: cfg.SkipTargets.IsFullySkipped("PythonFormat", cfg.PythonModules),
+		SkipPythonMypy:   cfg.SkipTargets.IsFullySkipped("PythonMypy", cfg.PythonModules),
+		SkipLuaFormat:    cfg.SkipTargets.IsFullySkipped("LuaFormat", cfg.LuaModules),
 	}
 
 	funcMap := template.FuncMap{
