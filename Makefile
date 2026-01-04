@@ -47,6 +47,10 @@ clean-sage:
 all: $(sagefile)
 	@$(sagefile) All
 
+.PHONY: generate-workflows
+generate-workflows: $(sagefile)
+	@$(sagefile) GenerateWorkflows
+
 .PHONY: go-build
 go-build: $(sagefile)
 	@$(sagefile) GoBuild
@@ -58,7 +62,3 @@ run-parallel: $(sagefile)
 .PHONY: run-serial
 run-serial: $(sagefile)
 	@$(sagefile) RunSerial
-
-.PHONY: sync-workflows
-sync-workflows: $(sagefile)
-	@$(sagefile) SyncWorkflows

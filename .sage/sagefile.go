@@ -25,14 +25,14 @@ func main() {
 }
 
 func All(ctx context.Context) error {
-	sg.Deps(ctx, SyncWorkflows)
+	sg.Deps(ctx, GenerateWorkflows)
 	sg.Deps(ctx, RunSerial)
 	sg.Deps(ctx, RunParallel)
 	return targets.GitDiffCheck(ctx)
 }
 
-// SyncWorkflows regenerates CI workflows for the configured platform.
-func SyncWorkflows(ctx context.Context) error {
+// GenerateWorkflows regenerates CI workflows for the configured platform.
+func GenerateWorkflows(ctx context.Context) error {
 	return targets.GenerateWorkflows(cfg)
 }
 
