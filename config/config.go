@@ -28,8 +28,9 @@ type Config struct {
 	Platform Platform `yaml:"platform"`
 
 	// Workflow selection (default: all enabled if empty).
-	// E.g. []string{"stale", "release"}
-	Skip []string `yaml:"skip"`
+	// E.g. []string{"sage-ci-stale", "sage-ci-release"}
+	// You can also use a string, and if found, the workflow will be skipped.
+	SkipWorkflows []string `yaml:"skip"`
 
 	// Options
 	// default: ["stable"]

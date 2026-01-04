@@ -10,6 +10,7 @@ import (
 
 var cfg = config.Config{
 	GoModules: []string{"."},
+	Platform:  config.PlatformGitHub,
 }
 
 var skip = targets.SkipTargets{}
@@ -24,14 +25,14 @@ func main() {
 }
 
 func All(ctx context.Context) error {
-	sg.Deps(ctx, Sync)
+	sg.Deps(ctx, SyncWorkflows)
 	sg.Deps(ctx, RunSerial)
 	sg.Deps(ctx, RunParallel)
 	return targets.GitDiffCheck(ctx)
 }
 
-// Sync regenerates CI workflows for the configured platform.
-func Sync(ctx context.Context) error {
+// SyncWorkflows regenerates CI workflows for the configured platform.
+func SyncWorkflows(ctx context.Context) error {
 	return targets.SyncWorkflows(cfg)
 }
 

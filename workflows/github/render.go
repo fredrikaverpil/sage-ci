@@ -119,7 +119,7 @@ func render(cfg config.Config) error {
 
 		// Check for skip
 		baseName := strings.TrimSuffix(fileName, ".yml")
-		if slices.Contains(cfg.Skip, baseName) {
+		if slices.Contains(cfg.SkipWorkflows, baseName) {
 			return nil
 		}
 

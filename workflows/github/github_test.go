@@ -44,7 +44,7 @@ func TestSync(t *testing.T) {
 	t.Cleanup(func() { _ = os.RemoveAll(tmpDir2) })
 
 	cfg.OutputDir = tmpDir2
-	cfg.Skip = []string{"sage-ci-stale", "sage-ci-release"}
+	cfg.SkipWorkflows = []string{"sage-ci-stale", "sage-ci-release"}
 
 	if err := Sync(cfg); err != nil {
 		t.Fatalf("Sync with skip failed: %v", err)

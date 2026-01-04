@@ -111,7 +111,7 @@ func runSync(args []string) error {
 		cfg.LuaModules = strings.Split(*luaModules, ",")
 	}
 	if *skip != "" {
-		cfg.Skip = strings.Split(*skip, ",")
+		cfg.SkipWorkflows = strings.Split(*skip, ",")
 	}
 	if *outputDir != "" {
 		cfg.OutputDir = *outputDir

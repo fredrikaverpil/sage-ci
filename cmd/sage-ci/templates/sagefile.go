@@ -30,7 +30,7 @@ var cfg = config.Config{
 
 	// Skip lists workflow names to skip during sync.
 	// Example: []string{"lint", "test"}
-	Skip: []string{},
+	SkipWorkflows: []string{},
 }
 
 // skip lists sage target names to skip.
@@ -50,14 +50,14 @@ func main() {
 
 // All is the default target. Customize this to run the targets you need.
 func All(ctx context.Context) error {
-	sg.Deps(ctx, Sync)
+	sg.Deps(ctx, SyncWorkflows)
 	sg.Deps(ctx, RunSerial)
 	sg.Deps(ctx, RunParallel)
 	return targets.GitDiffCheck(ctx)
 }
 
-// Sync regenerates CI workflows for the configured platform.
-func Sync(ctx context.Context) error {
+// SyncWorkflows regenerates CI workflows for the configured platform.
+func SyncWorkflows(ctx context.Context) error {
 	return targets.SyncWorkflows(cfg)
 }
 
