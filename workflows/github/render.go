@@ -130,7 +130,7 @@ func render(cfg config.Config) error {
 			return nil
 		}
 
-		outputPath := filepath.Join(cfg.OutputDir, fileName)
+		outputPath := filepath.Join(outputDir, fileName)
 
 		// Ensure output dir exists
 		if err := os.MkdirAll(filepath.Dir(outputPath), 0o755); err != nil {

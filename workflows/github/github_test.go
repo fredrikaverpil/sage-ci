@@ -15,9 +15,13 @@ func TestSync(t *testing.T) {
 	}
 	t.Cleanup(func() { _ = os.RemoveAll(tmpDir) })
 
+	// Override output directory for testing
+	origOutputDir := outputDir
+	outputDir = tmpDir
+	t.Cleanup(func() { outputDir = origOutputDir })
+
 	cfg := config.Config{
 		GoModules: []string{"."},
-		OutputDir: tmpDir,
 	}
 
 	if err := Sync(cfg); err != nil {
@@ -43,7 +47,7 @@ func TestSync(t *testing.T) {
 	tmpDir2, _ := os.MkdirTemp("", "sage-ci-test-skip-*")
 	t.Cleanup(func() { _ = os.RemoveAll(tmpDir2) })
 
-	cfg.OutputDir = tmpDir2
+	outputDir = tmpDir2
 	cfg.SkipWorkflows = []string{"sage-ci-stale", "sage-ci-release"}
 
 	if err := Sync(cfg); err != nil {
@@ -64,8 +68,8 @@ func TestSync(t *testing.T) {
 	tmpDir3, _ := os.MkdirTemp("", "sage-ci-test-ecosystem-*")
 	t.Cleanup(func() { _ = os.RemoveAll(tmpDir3) })
 
+	outputDir = tmpDir3
 	cfgNoGo := config.Config{
-		OutputDir: tmpDir3,
 		// No GoModules, PythonModules, or LuaModules
 	}
 

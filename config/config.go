@@ -45,10 +45,6 @@ type Config struct {
 	PythonVersions []string
 	// default: ["ubuntu-latest"]
 	OSVersions []string
-
-	// OutputDir is the directory where workflows will be written.
-	// Platform-specific defaults apply if empty.
-	OutputDir string
 }
 
 // WithDefaults returns a copy of the config with default values applied.
