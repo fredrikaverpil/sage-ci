@@ -55,14 +55,6 @@ build-sage-ci: $(sagefile)
 generate-workflows: $(sagefile)
 	@$(sagefile) GenerateWorkflows
 
-.PHONY: run-parallel
-run-parallel: $(sagefile)
-	@$(sagefile) RunParallel
-
-.PHONY: run-serial
-run-serial: $(sagefile)
-	@$(sagefile) RunSerial
-
 .PHONY: update-sage-ci
 update-sage-ci: $(sagefile)
 	@$(sagefile) UpdateSageCi

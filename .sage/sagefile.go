@@ -25,17 +25,9 @@ func main() {
 }
 
 func All(ctx context.Context) error {
-	sg.Deps(ctx, RunSerial)
-	sg.Deps(ctx, RunParallel)
+	targets.RunSerial(ctx, cfg, skip)
+	targets.RunParallel(ctx, cfg, skip)
 	return targets.GitDiffCheck(ctx)
-}
-
-func RunSerial(ctx context.Context) error {
-	return targets.RunSerial(ctx, cfg, skip)
-}
-
-func RunParallel(ctx context.Context) error {
-	return targets.RunParallel(ctx, cfg, skip)
 }
 
 func GenerateWorkflows(ctx context.Context) error {
