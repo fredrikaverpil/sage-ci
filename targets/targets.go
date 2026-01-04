@@ -152,18 +152,23 @@ func GenerateWorkflows(cfg config.Config) error {
 
 // UpdateSageCi updates the sage-ci dependency, regenerates Makefiles and workflows.
 func UpdateSageCi(ctx context.Context, cfg config.Config) error {
-	sg.Logger(ctx).Println("updating sage-ci dependency...")
-	getCmd := sg.Command(ctx, "go", "get", "-u", "github.com/fredrikaverpil/sage-ci@latest")
-	getCmd.Dir = sg.FromGitRoot(".sage")
-	if err := getCmd.Run(); err != nil {
-		return fmt.Errorf("update sage-ci dependency: %w", err)
-	}
+	// Skip dependency update if running from the sage-ci repo itself.
+	if _, err := os.Stat(sg.FromGitRoot("cmd/sage-ci")); err == nil {
+		sg.Logger(ctx).Println("skipping sage-ci dependency update (running from sage-ci repo)")
+	} else {
+		sg.Logger(ctx).Println("updating sage-ci dependency...")
+		getCmd := sg.Command(ctx, "go", "get", "-u", "github.com/fredrikaverpil/sage-ci@latest")
+		getCmd.Dir = sg.FromGitRoot(".sage")
+		if err := getCmd.Run(); err != nil {
+			return fmt.Errorf("update sage-ci dependency: %w", err)
+		}
 
-	sg.Logger(ctx).Println("running go mod tidy...")
-	tidyCmd := sg.Command(ctx, "go", "mod", "tidy")
-	tidyCmd.Dir = sg.FromGitRoot(".sage")
-	if err := tidyCmd.Run(); err != nil {
-		return fmt.Errorf("go mod tidy: %w", err)
+		sg.Logger(ctx).Println("running go mod tidy...")
+		tidyCmd := sg.Command(ctx, "go", "mod", "tidy")
+		tidyCmd.Dir = sg.FromGitRoot(".sage")
+		if err := tidyCmd.Run(); err != nil {
+			return fmt.Errorf("go mod tidy: %w", err)
+		}
 	}
 
 	sg.Logger(ctx).Println("regenerating Makefile(s)...")

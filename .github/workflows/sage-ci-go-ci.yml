@@ -20,7 +20,7 @@ jobs:
           go-version: stable
           cache: false
       - name: golangci-lint
-        run: make go-lint
+        run: make run target=go-lint
         working-directory: ${{ matrix.module }}
 
   format:
@@ -36,7 +36,7 @@ jobs:
           go-version: stable
           cache: false
       - name: format-check
-        run: make go-format
+        run: make run target=go-format
         working-directory: ${{ matrix.module }}
 
   test:
@@ -54,7 +54,7 @@ jobs:
           go-version: ${{ matrix.go }}
           cache: false
       - name: test
-        run: make go-test
+        run: make run target=go-test
         working-directory: ${{ matrix.module }}
 
   vulncheck:
@@ -70,5 +70,5 @@ jobs:
           go-version: stable
           cache: false
       - name: govulncheck
-        run: make go-vulncheck
+        run: make run target=go-vulncheck
         working-directory: ${{ matrix.module }}
