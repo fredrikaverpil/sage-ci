@@ -23,6 +23,7 @@ func main() {
 }
 
 func All(ctx context.Context) error {
+	sg.Deps(ctx, Sync)
 	sg.Deps(ctx, RunSyncedSerial)
 	sg.Deps(ctx, RunSynced)
 	return GitDiffCheck(ctx)

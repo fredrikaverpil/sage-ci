@@ -110,3 +110,7 @@ run-synced: $(sagefile)
 .PHONY: run-synced-serial
 run-synced-serial: $(sagefile)
 	@$(sagefile) RunSyncedSerial
+
+.PHONY: sync
+sync: $(sagefile)
+	@$(sagefile) Sync

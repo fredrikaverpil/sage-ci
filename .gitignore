@@ -1,5 +1,5 @@
 # built binary
-/sage-ci
+/bin/
 
 # sage
 /.sage/.gitignore

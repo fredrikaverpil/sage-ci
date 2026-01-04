@@ -90,32 +90,31 @@ func render(cfg Config) error {
 			return fmt.Errorf("execute template %s: %w", path, err)
 		}
 
-		// Determine output filename:
-		// - generic/*.yml.tmpl -> *.yml
-		// - <ecosystem>/*.yml.tmpl -> <ecosystem>-*.yml
 		relPath, err := filepath.Rel("templates", path)
 		if err != nil {
 			return fmt.Errorf("get relative path for %s: %w", path, err)
 		}
 		parts := strings.Split(relPath, string(os.PathSeparator))
 
+		// Determine output filename:
+		// - generic/*.yml.tmpl -> sage-ci-*.yml
+		// - <ecosystem>/*.yml.tmpl -> sage-ci-<ecosystem>-*.yml
 		var fileName string
 		if len(parts) == 2 {
 			category := parts[0]
 			name := strings.TrimSuffix(parts[1], ".tmpl")
 
 			if category == "generic" {
-				fileName = name
+				fileName = fmt.Sprintf("sage-ci-%s", name)
 			} else {
-				fileName = fmt.Sprintf("%s-%s", category, name)
+				fileName = fmt.Sprintf("sage-ci-%s-%s", category, name)
 			}
 		} else {
 			// Fallback
-			fileName = strings.TrimSuffix(filepath.Base(path), ".tmpl")
+			fileName = "sage-ci-" + strings.TrimSuffix(filepath.Base(path), ".tmpl")
 		}
 
 		// Check for skip
-		// If the workflow name (fileName without extension) is in cfg.Skip
 		baseName := strings.TrimSuffix(fileName, ".yml")
 		if slices.Contains(cfg.Skip, baseName) {
 			return nil

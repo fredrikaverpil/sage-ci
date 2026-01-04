@@ -23,11 +23,11 @@ func TestSync(t *testing.T) {
 	}
 
 	expectedFiles := []string{
-		"go-ci.yml",
-		"pr.yml",
-		"release.yml",
+		"sage-ci-go-ci.yml",
+		"sage-ci-pr.yml",
+		"sage-ci-release.yml",
 		"sage-ci-sync.yml",
-		"stale.yml",
+		"sage-ci-stale.yml",
 	}
 
 	for _, file := range expectedFiles {
@@ -42,20 +42,20 @@ func TestSync(t *testing.T) {
 	t.Cleanup(func() { _ = os.RemoveAll(tmpDir2) })
 
 	cfg.OutputDir = tmpDir2
-	cfg.Skip = []string{"stale", "release"}
+	cfg.Skip = []string{"sage-ci-stale", "sage-ci-release"}
 
 	if err := Sync(cfg); err != nil {
 		t.Fatalf("Sync with skip failed: %v", err)
 	}
 
-	if _, err := os.Stat(filepath.Join(tmpDir2, "stale.yml")); !os.IsNotExist(err) {
-		t.Error("stale.yml should have been skipped")
+	if _, err := os.Stat(filepath.Join(tmpDir2, "sage-ci-stale.yml")); !os.IsNotExist(err) {
+		t.Error("sage-ci-stale.yml should have been skipped")
 	}
-	if _, err := os.Stat(filepath.Join(tmpDir2, "release.yml")); !os.IsNotExist(err) {
-		t.Error("release.yml should have been skipped")
+	if _, err := os.Stat(filepath.Join(tmpDir2, "sage-ci-release.yml")); !os.IsNotExist(err) {
+		t.Error("sage-ci-release.yml should have been skipped")
 	}
-	if _, err := os.Stat(filepath.Join(tmpDir2, "go-ci.yml")); os.IsNotExist(err) {
-		t.Error("go-ci.yml should not have been skipped")
+	if _, err := os.Stat(filepath.Join(tmpDir2, "sage-ci-go-ci.yml")); os.IsNotExist(err) {
+		t.Error("sage-ci-go-ci.yml should not have been skipped")
 	}
 
 	// Verify ecosystem-specific workflows are skipped when no modules configured
@@ -72,12 +72,12 @@ func TestSync(t *testing.T) {
 	}
 
 	// Ecosystem-specific workflows should not exist
-	if _, err := os.Stat(filepath.Join(tmpDir3, "go-ci.yml")); !os.IsNotExist(err) {
-		t.Error("go-ci.yml should not exist when GoModules is empty")
+	if _, err := os.Stat(filepath.Join(tmpDir3, "sage-ci-go-ci.yml")); !os.IsNotExist(err) {
+		t.Error("sage-ci-go-ci.yml should not exist when GoModules is empty")
 	}
 
 	// Generic workflows should still exist
-	if _, err := os.Stat(filepath.Join(tmpDir3, "pr.yml")); os.IsNotExist(err) {
-		t.Error("pr.yml should exist even without modules")
+	if _, err := os.Stat(filepath.Join(tmpDir3, "sage-ci-pr.yml")); os.IsNotExist(err) {
+		t.Error("sage-ci-pr.yml should exist even without modules")
 	}
 }

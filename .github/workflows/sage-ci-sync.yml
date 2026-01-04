@@ -17,32 +17,30 @@ jobs:
         with:
           go-version: stable
 
-      - name: Update sage-ci
-		run: |
-		  go get -u github.com/fredrikaverpil/sage-ci
-		  go mod tidy
-	    working-directory: .sage
+      - name: Sync sage-ci
+        run: |
+          if [ -d "cmd/sage-ci" ]; then
+		    # run in sage-ci repo
+            go run ./cmd/sage-ci sync
+          else
+		    # run in any other repo
+            go run github.com/fredrikaverpil/sage-ci/cmd/sage-ci@latest sync
+          fi
 
-	  - name: Re-generate Sage targets
-		# TODO: if running in sage-ci repo, run `go run cmd/sage-ci/main.go sync` instead
-		run: go run github.com/fredrikaverpil/sage-ci/cmd/sage-ci@latest sync
-
-      - name: Make sage targets
-		run: make sage
-
-      - name: Re-generate GitHub Actions workflows
-        run: make generate-gha
+      - name: Regenerate Makefile
+        run: go run ./.sage
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          commit-message: 'chore: sync sage-ci workflows'
-          title: 'chore: sync sage-ci workflows'
+          commit-message: 'chore: sync sage-ci'
+          title: 'chore: sync sage-ci'
           body: |
-            Automated update from sage-ci sync.
+            Automated update from sage-ci.
 
             This PR updates:
-            - `.sage/synced.go`
+            - `.sage/targets.gen.go`
             - `.github/workflows/`
+            - `Makefile`
           branch: chore/sage-ci-sync
           delete-branch: true

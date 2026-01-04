@@ -9,7 +9,7 @@ import (
 // GoBuild builds the sage-ci tool.
 func GoBuild(ctx context.Context) error {
 	sg.Logger(ctx).Printf("building sage-ci...")
-	cmd := sg.Command(ctx, "go", "build", "-o", "sage-ci", "./cmd/sage-ci")
+	cmd := sg.Command(ctx, "go", "build", "-o", "bin/sage-ci", "./cmd/sage-ci")
 	cmd.Dir = sg.FromGitRoot()
 	if err := cmd.Run(); err != nil {
 		return err
