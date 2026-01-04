@@ -84,47 +84,49 @@ func (s SkipTargets) ShouldSkip(target, module string) bool {
 
 // RunSerial runs all mutating targets serially for configured ecosystems.
 func RunSerial(ctx context.Context, cfg config.Config, skip SkipTargets) error {
+	var deps []interface{}
 	if len(cfg.GoModules) > 0 {
-		sg.SerialDeps(ctx,
+		deps = append(deps,
 			func(ctx context.Context) error { return GoModTidy(ctx, cfg, skip) },
 			func(ctx context.Context) error { return GoFormat(ctx, cfg, skip) },
 			func(ctx context.Context) error { return GoLint(ctx, cfg, skip) },
 		)
 	}
 	if len(cfg.PythonModules) > 0 {
-		sg.SerialDeps(ctx,
+		deps = append(deps,
 			func(ctx context.Context) error { return PythonSync(ctx, cfg, skip) },
 			func(ctx context.Context) error { return PythonFormat(ctx, cfg, skip) },
 			func(ctx context.Context) error { return PythonLint(ctx, cfg, skip) },
 		)
 	}
 	if len(cfg.LuaModules) > 0 {
-		sg.SerialDeps(ctx,
+		deps = append(deps,
 			func(ctx context.Context) error { return LuaFormat(ctx, cfg, skip) },
 		)
+	}
+	if len(deps) > 0 {
+		sg.SerialDeps(ctx, deps...)
 	}
 	return nil
 }
 
 // RunParallel runs all non-mutating targets in parallel for configured ecosystems.
 func RunParallel(ctx context.Context, cfg config.Config, skip SkipTargets) error {
-	if len(cfg.GoModules) > 0 && len(cfg.PythonModules) > 0 {
-		sg.Deps(ctx,
-			func(ctx context.Context) error { return GoTest(ctx, cfg, skip) },
-			func(ctx context.Context) error { return GoVulncheck(ctx, cfg, skip) },
-			func(ctx context.Context) error { return PythonMypy(ctx, cfg, skip) },
-			func(ctx context.Context) error { return PythonTest(ctx, cfg, skip) },
-		)
-	} else if len(cfg.GoModules) > 0 {
-		sg.Deps(ctx,
+	var deps []any
+	if len(cfg.GoModules) > 0 {
+		deps = append(deps,
 			func(ctx context.Context) error { return GoTest(ctx, cfg, skip) },
 			func(ctx context.Context) error { return GoVulncheck(ctx, cfg, skip) },
 		)
-	} else if len(cfg.PythonModules) > 0 {
-		sg.Deps(ctx,
+	}
+	if len(cfg.PythonModules) > 0 {
+		deps = append(deps,
 			func(ctx context.Context) error { return PythonMypy(ctx, cfg, skip) },
 			func(ctx context.Context) error { return PythonTest(ctx, cfg, skip) },
 		)
+	}
+	if len(deps) > 0 {
+		sg.Deps(ctx, deps...)
 	}
 	return nil
 }
