@@ -81,9 +81,9 @@ func RunParallel(ctx context.Context, cfg config.Config, skip SkipTargets) error
 
 // --- Generate targets ---
 
-// SyncWorkflows generates CI workflows for the configured platform.
+// GenerateWorkflows generates CI workflows for the configured platform.
 // Defaults to GitHub if no platform is specified.
-func SyncWorkflows(cfg config.Config) error {
+func GenerateWorkflows(cfg config.Config) error {
 	switch cfg.Platform {
 	case config.PlatformGitLab:
 		return fmt.Errorf("gitlab workflows not yet implemented")
@@ -94,12 +94,6 @@ func SyncWorkflows(cfg config.Config) error {
 	default:
 		return fmt.Errorf("unknown platform: %s", cfg.Platform)
 	}
-}
-
-// GenerateGHA generates GitHub Actions workflows.
-// Deprecated: Use SyncWorkflows instead.
-func GenerateGHA(cfg config.Config) error {
-	return github.Sync(cfg)
 }
 
 // --- Utility targets ---

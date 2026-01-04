@@ -3,7 +3,79 @@
 This repo holds tools and configurations which I want synced across several
 projects.
 
-The engine powering everything is [Sage](https://github.com/einride/sage).
+The engine powering everything is [Sage](https://github.com/einride/sage) 🌿.
+
+## Quickstart
+
+### Bootstrap to your project
+
+```bash
+go run github.com/fredrikaverpil/sage-ci/cmd/sage-ci@latest init
+```
+
+This creates `.sage/sagefile.go` with your project configuration.
+
+> [!TODO]
+>
+> The bootstrapper should create the `.sage/go.mod` as well.
+
+### Configure
+
+Edit `.sage/sagefile.go` to specify your modules and customize targets:
+
+```go
+import (
+    "github.com/fredrikaverpil/sage-ci/targets"
+    "github.com/fredrikaverpil/sage-ci/config"
+)
+
+var cfg = config.Config{
+    GoModules: []string{"."},
+    PythonModules: []string{"tests"},
+    LuaModules: []string{"lua"},
+    Platform: config.PlatformGitHub,
+}
+
+var skip = targets.SkipTargets{}
+
+func All(ctx context.Context) error {
+    sg.Deps(ctx, GenerateWorkflows)
+    sg.SerialDeps(ctx, RunSerial)
+    sg.Deps(ctx, RunParallel)
+    return targets.GitDiffCheck(ctx)
+}
+```
+
+See [config/config.go](config/config.go) for all configuration options.
+
+You can add custom targets to `sagefile.go` or create additional `.go` files in
+`.sage/`. Sage-ci provides opinionated targets in `RunSerial` and `RunParallel`.
+
+### Generate and run Makefile
+
+```bash
+# Generate the Makefile
+go run ./.sage
+
+# Generate workflows
+make generate-workflows
+
+# Run Makefile (runs the All() function of sagefile.go)
+make
+```
+
+> [!TIP]
+>
+> Install Makefile shell completions to see all targets in your terminal by
+> typing out `make` followed by a space and then tab.
+
+## Updating sage-ci
+
+Either wait until the `sage-ci-sync.yml` workflow runs, or run manually:
+
+```sh
+make update-sage-ci
+```
 
 ## Renovate tool updates
 
@@ -19,102 +91,3 @@ Renovate will automatically create PRs when new versions are available.
 When adding new tools, use the appropriate
 [datasource](https://docs.renovatebot.com/modules/datasource/) for version
 lookups.
-
-## Bootstrap
-
-To bootstrap `sage-ci` into a new repository, use the `sage-ci` CLI.
-
-### 1. Install or run the CLI
-
-```bash
-# Run directly via its remote path
-go run github.com/fredrikaverpil/sage-ci/cmd/sage-ci@latest <command>
-
-# Or build and run locally (if you have the repo cloned)
-go build -o sage-ci ./cmd/sage-ci
-```
-
-### 2. Initialize the project
-
-Run the `init` command to create the `.sage/` directory:
-
-```bash
-sage-ci init
-```
-
-This creates `.sage/sagefile.go` with your project configuration.
-
-### 3. Configure your project
-
-Edit `.sage/sagefile.go` to specify your modules and customize targets:
-
-```go
-import (
-    "github.com/fredrikaverpil/sage-ci/targets"
-    "github.com/fredrikaverpil/sage-ci/workflows"
-)
-
-var cfg = workflows.Config{
-    GoModules: []string{"."},
-    // PythonModules: []string{"python"},
-    // LuaModules:    []string{"lua"},
-}
-
-var skip = targets.SkipTargets{}
-
-func All(ctx context.Context) error {
-    sg.Deps(ctx, RunSerial)
-    sg.Deps(ctx, RunParallel)
-    return targets.GitDiffCheck(ctx)
-}
-
-func RunSerial(ctx context.Context) error {
-    return targets.RunSerial(ctx, cfg, skip)
-}
-
-func RunParallel(ctx context.Context) error {
-    return targets.RunParallel(ctx, cfg, skip)
-}
-```
-
-You can add custom targets to `sagefile.go` or create additional `.go` files in
-`.sage/`.
-
-### 4. Generate Makefile and sync workflows
-
-```bash
-# Generate the Makefile
-go run ./.sage
-
-# Sync workflows to .github/workflows/
-sage-ci sync
-```
-
-## Updating
-
-Update your `sage-ci` dependency to get the latest targets:
-
-```bash
-cd .sage && go get -u github.com/fredrikaverpil/sage-ci@latest
-```
-
-Then regenerate workflows:
-
-```bash
-sage-ci sync
-```
-
-## CLI Reference
-
-```
-sage-ci init    # Bootstrap .sage/ directory
-sage-ci sync    # Sync workflows to .github/workflows
-```
-
-The `sync` command also accepts flags for standalone use without a `.sage/`
-directory:
-
-```bash
-sage-ci sync --go-modules=. --python-modules=scripts
-sage-ci sync --config=.sage-ci.yml
-```

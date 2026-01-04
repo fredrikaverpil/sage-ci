@@ -59,6 +59,6 @@ run-parallel: $(sagefile)
 run-serial: $(sagefile)
 	@$(sagefile) RunSerial
 
-.PHONY: sync
-sync: $(sagefile)
-	@$(sagefile) Sync
+.PHONY: sync-workflows
+sync-workflows: $(sagefile)
+	@$(sagefile) SyncWorkflows

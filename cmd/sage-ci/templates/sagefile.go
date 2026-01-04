@@ -58,7 +58,7 @@ func All(ctx context.Context) error {
 
 // SyncWorkflows regenerates CI workflows for the configured platform.
 func SyncWorkflows(ctx context.Context) error {
-	return targets.SyncWorkflows(cfg)
+	return targets.GenerateWorkflows(cfg)
 }
 
 // RunSerial runs all mutating targets serially.
