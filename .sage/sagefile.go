@@ -32,3 +32,7 @@ func All(ctx context.Context) error {
 	sg.Deps(ctx, targets.GitDiffCheckTarget())
 	return nil
 }
+
+func UpdateSageCi(ctx context.Context) error {
+	return targets.UpdateSageCi(ctx, cfg)
+}

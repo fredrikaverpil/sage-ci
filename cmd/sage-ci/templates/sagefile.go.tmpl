@@ -59,3 +59,8 @@ func All(ctx context.Context) error {
 	sg.Deps(ctx, targets.GitDiffCheckTarget())
 	return nil
 }
+
+// UpdateSageCi updates the sage-ci dependency and regenerates Makefiles and workflows.
+func UpdateSageCi(ctx context.Context) error {
+	return targets.UpdateSageCi(ctx, cfg)
+}
