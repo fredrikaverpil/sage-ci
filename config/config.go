@@ -23,9 +23,9 @@ type Config struct {
 	// E.g. []string{"lua/plugin"}
 	LuaModules []string
 
-	// Workflow platform to generate for.
-	// Default: "github"
-	Platform []Platform
+	// Workflow platforms to generate for.
+	// Default: ["github"]
+	Platforms []Platform
 
 	// Workflow selection (default: all enabled if empty).
 	// E.g. []string{"sage-ci-stale", "sage-ci-release"}
@@ -58,8 +58,8 @@ func (c Config) WithDefaults() Config {
 	if len(c.OSVersions) == 0 {
 		c.OSVersions = []string{"ubuntu-latest"}
 	}
-	if len(c.Platform) == 0 {
-		c.Platform = []Platform{PlatformGitHub}
+	if len(c.Platforms) == 0 {
+		c.Platforms = []Platform{PlatformGitHub}
 	}
 	return c
 }

@@ -118,7 +118,7 @@ func RunParallel(ctx context.Context, cfg config.Config) error {
 // Defaults to GitHub if no platform is specified.
 func GenerateWorkflows(cfg config.Config) error {
 	cfg = cfg.WithDefaults()
-	for _, platform := range cfg.Platform {
+	for _, platform := range cfg.Platforms {
 		switch platform {
 		case config.PlatformGitLab:
 			return fmt.Errorf("gitlab workflows not yet implemented")

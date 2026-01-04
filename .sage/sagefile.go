@@ -10,10 +10,7 @@ import (
 
 var cfg = config.Config{
 	GoModules: []string{"."},
-	Platform:  config.PlatformGitHub,
 }
-
-var skip = targets.SkipTargets{}
 
 func main() {
 	sg.GenerateMakefiles(
@@ -25,8 +22,8 @@ func main() {
 }
 
 func All(ctx context.Context) error {
-	targets.RunSerial(ctx, cfg, skip)
-	targets.RunParallel(ctx, cfg, skip)
+	targets.RunSerial(ctx, cfg)
+	targets.RunParallel(ctx, cfg)
 	return targets.GitDiffCheck(ctx)
 }
 
@@ -40,5 +37,5 @@ func UpdateSageCi(ctx context.Context) error {
 
 // Usage example: `make run target=go-format`
 func Run(ctx context.Context, target string) error {
-	return targets.Run(ctx, cfg, skip, target)
+	return targets.Run(ctx, cfg, target)
 }

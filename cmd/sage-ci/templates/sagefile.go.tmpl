@@ -26,7 +26,7 @@ var cfg = config.Config{
 	// Platform specifies which CI platform to generate workflows for.
 	// Options: "github", "gitlab", "codeberg"
 	// Default: "github"
-	Platform: []config.Platform{config.PlatformGitHub},
+	Platforms: []config.Platform{config.PlatformGitHub},
 
 	// Skip lists workflow names to skip during sync.
 	// Example: []string{"lint", "test"}
