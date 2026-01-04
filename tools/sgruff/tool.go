@@ -14,7 +14,7 @@ import (
 const name = "ruff"
 
 // renovate: datasource=pypi depName=ruff
-const version = "0.14.9"
+const version = "0.14.10"
 
 // Command returns an *exec.Cmd for ruff via uv tool run.
 func Command(ctx context.Context, args ...string) *exec.Cmd {
