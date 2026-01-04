@@ -29,11 +29,6 @@ type templateData struct {
 	GoVersions     []string
 	PythonVersions []string
 	OSVersions     []string
-
-	// Computed
-	HasGo     bool
-	HasPython bool
-	HasLua    bool
 }
 
 func render(cfg config.Config) error {
@@ -46,9 +41,6 @@ func render(cfg config.Config) error {
 		GoVersions:     cfg.GoVersions,
 		PythonVersions: cfg.PythonVersions,
 		OSVersions:     cfg.OSVersions,
-		HasGo:          cfg.HasGo(),
-		HasPython:      cfg.HasPython(),
-		HasLua:         cfg.HasLua(),
 	}
 
 	funcMap := template.FuncMap{
@@ -124,9 +116,9 @@ func render(cfg config.Config) error {
 		}
 
 		// Skip ecosystem-specific workflows if no modules configured
-		if (parts[0] == "go" && !data.HasGo) ||
-			(parts[0] == "python" && !data.HasPython) ||
-			(parts[0] == "lua" && !data.HasLua) {
+		if (parts[0] == "go" && len(cfg.GoModules) == 0) ||
+			(parts[0] == "python" && len(cfg.PythonModules) == 0) ||
+			(parts[0] == "lua" && len(cfg.LuaModules) == 0) {
 			return nil
 		}
 
