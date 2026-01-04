@@ -11,10 +11,6 @@ jobs:
 {{- if not .SkipPythonLint }}
   lint:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        module: {{ toJSON .PythonModules }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -24,16 +20,11 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - name: lint
         run: make python-lint
-        working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
 {{- end }}
 
 {{- if not .SkipPythonFormat }}
   format:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        module: {{ toJSON .PythonModules }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -43,16 +34,11 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - name: format-check
         run: make python-format
-        working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
 {{- end }}
 
 {{- if not .SkipPythonMypy }}
   type:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        module: {{ toJSON .PythonModules }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -62,7 +48,6 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - name: mypy
         run: make python-mypy
-        working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
 {{- end }}
 
 {{- if not .SkipPythonTest }}
@@ -70,7 +55,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        module: {{ toJSON .PythonModules }}
         os: {{ toJSON .OSVersions }}
         python: {{ toJSON .PythonVersions }}
     runs-on: ${{ "{{" }} matrix.os {{ "}}" }}
@@ -85,5 +69,4 @@ jobs:
           python-version: ${{ "{{" }} matrix.python {{ "}}" }}
       - name: pytest
         run: make python-test
-        working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
 {{- end }}

@@ -11,10 +11,6 @@ jobs:
 {{- if not .SkipGoLint }}
   lint:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        module: {{ toJSON .GoModules }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -23,16 +19,11 @@ jobs:
           cache: false
       - name: golangci-lint
         run: make go-lint
-        working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
 {{- end }}
 
 {{- if not .SkipGoFormat }}
   format:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        module: {{ toJSON .GoModules }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -41,7 +32,6 @@ jobs:
           cache: false
       - name: format-check
         run: make go-format
-        working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
 {{- end }}
 
 {{- if not .SkipGoTest }}
@@ -49,7 +39,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        module: {{ toJSON .GoModules }}
         os: {{ toJSON .OSVersions }}
         go: {{ toJSON .GoVersions }}
     runs-on: ${{ "{{" }} matrix.os {{ "}}" }}
@@ -61,16 +50,11 @@ jobs:
           cache: false
       - name: test
         run: make go-test
-        working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
 {{- end }}
 
 {{- if not .SkipGoVulncheck }}
   vulncheck:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        module: {{ toJSON .GoModules }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -79,5 +63,4 @@ jobs:
           cache: false
       - name: govulncheck
         run: make go-vulncheck
-        working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
 {{- end }}

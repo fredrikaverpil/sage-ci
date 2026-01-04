@@ -11,10 +11,6 @@ jobs:
 {{- if not .SkipLuaFormat }}
   format:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        module: {{ toJSON .LuaModules }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -23,5 +19,4 @@ jobs:
           cache: false
       - name: format-check
         run: make lua-format
-        working-directory: ${{ "{{" }} matrix.module {{ "}}" }}
 {{- end }}
