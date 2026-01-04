@@ -79,8 +79,8 @@ make update-sage-ci
 
 ## GitHub Actions permissions
 
-The generated workflows (e.g., `release.yml`, `sage-ci-sync.yml`) require write
-access to create branches and pull requests. To enable this:
+The generated workflows (e.g., `sage-ci-release.yml`, `sage-ci-sync.yml`)
+require write access to create branches and pull requests. To enable this:
 
 1. Go to your repository **Settings** → **Actions** → **General**
 2. Under **Workflow permissions**, select **Read and write permissions**
