@@ -8,7 +8,8 @@ import (
 	"go.einride.tech/sage/sg"
 )
 
-func luaFormat(ctx context.Context, cfg config.Config) error {
+// LuaFormat runs stylua for all configured Lua modules.
+func LuaFormat(ctx context.Context, cfg config.Config) error {
 	for _, module := range cfg.LuaModules {
 		if cfg.SkipTargets.ShouldSkip("LuaFormat", module) {
 			continue

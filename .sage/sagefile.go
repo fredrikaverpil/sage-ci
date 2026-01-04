@@ -34,8 +34,3 @@ func GenerateWorkflows(ctx context.Context) error {
 func UpdateSageCi(ctx context.Context) error {
 	return targets.UpdateSageCi(ctx, cfg)
 }
-
-// Usage example: `make run target=go-format`
-func Run(ctx context.Context, target string) error {
-	return targets.Run(ctx, cfg, target)
-}

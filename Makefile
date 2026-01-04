@@ -55,12 +55,25 @@ build-sage-ci: $(sagefile)
 generate-workflows: $(sagefile)
 	@$(sagefile) GenerateWorkflows
 
-.PHONY: run
-run: $(sagefile)
-ifndef target
-	 $(error missing argument target="...")
-endif
-	@$(sagefile) Run "$(target)"
+.PHONY: go-format
+go-format: $(sagefile)
+	@$(sagefile) GoFormat
+
+.PHONY: go-lint
+go-lint: $(sagefile)
+	@$(sagefile) GoLint
+
+.PHONY: go-mod-tidy
+go-mod-tidy: $(sagefile)
+	@$(sagefile) GoModTidy
+
+.PHONY: go-test
+go-test: $(sagefile)
+	@$(sagefile) GoTest
+
+.PHONY: go-vulncheck
+go-vulncheck: $(sagefile)
+	@$(sagefile) GoVulncheck
 
 .PHONY: update-sage-ci
 update-sage-ci: $(sagefile)

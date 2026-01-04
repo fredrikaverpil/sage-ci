@@ -24,25 +24,11 @@ configuration.
 Edit `.sage/sagefile.go` to specify your modules and customize targets:
 
 ```go
-import (
-    "github.com/fredrikaverpil/sage-ci/targets"
-    "github.com/fredrikaverpil/sage-ci/config"
-)
-
 var cfg = config.Config{
-    GoModules: []string{"."},
+    GoModules:     []string{"."},
     PythonModules: []string{"tests"},
-    LuaModules: []string{"lua"},
-    Platform: config.PlatformGitHub,
-}
-
-var skip = targets.SkipTargets{}
-
-func All(ctx context.Context) error {
-    sg.Deps(ctx, GenerateWorkflows)
-    sg.SerialDeps(ctx, RunSerial)
-    sg.Deps(ctx, RunParallel)
-    return targets.GitDiffCheck(ctx)
+    LuaModules:    []string{"lua"},
+    Platforms:     []config.Platform{config.PlatformGitHub},
 }
 ```
 
@@ -51,23 +37,48 @@ See [config/config.go](config/config.go) for all configuration options.
 You can add custom targets to `sagefile.go` or create additional `.go` files in
 `.sage/`. Sage-ci provides opinionated targets in `RunSerial` and `RunParallel`.
 
-### Generate and run Makefile
+### Generate Makefile, targets and workflows
 
 ```bash
-# Generate the Makefile
+# Generate the initial Makefile
 go run ./.sage
 
-# Generate workflows
-make generate-workflows
+# Generate targets and workflows
+make update-sage-ci
+```
 
-# Run Makefile (runs the All() function of sagefile.go)
+This generates `.sage/targets.gen.go` with individual target functions based on
+your configuration, giving you Makefile targets like `make go-lint`,
+`make python-test`, etc.
+
+### Run targets
+
+```bash
+# Run the default target (All)
 make
+
+# Run individual targets
+make go-lint
+make go-test
+make python-format
 ```
 
 > [!TIP]
 >
 > Install Makefile shell completions to see all targets in your terminal by
 > typing out `make` followed by a space and then tab.
+
+## Adding custom targets
+
+Add a function to `.sage/sagefile.go` or a new `.go` file in `.sage/`:
+
+```go
+func MyTarget(ctx context.Context) error {
+    return sg.Command(ctx, "echo", "hello").Run()
+}
+```
+
+Run `go run ./.sage` to regenerate the Makefile, then use `make my-target`.
 
 ## Updating sage-ci
 

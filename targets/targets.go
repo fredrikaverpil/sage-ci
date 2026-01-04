@@ -5,61 +5,11 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/fredrikaverpil/sage-ci/config"
 	"github.com/fredrikaverpil/sage-ci/workflows/github"
 	"go.einride.tech/sage/sg"
 )
-
-// ErrUnknownTarget is returned when Run is called with an unrecognized target name.
-var ErrUnknownTarget = fmt.Errorf("unknown target")
-
-// Run executes a target by name. The target parameter uses kebab-case naming
-// (e.g., "go-format", "python-lint") which maps to the corresponding function
-// (e.g., goFormat, pythonLint).
-//
-// Available targets:
-//   - go-mod-tidy, go-format, go-lint, go-test, go-vulncheck
-//   - python-sync, python-format, python-lint, python-mypy, python-test
-//   - lua-format
-//   - run-serial, run-parallel
-func Run(ctx context.Context, cfg config.Config, target string) error {
-	switch strings.ToLower(target) {
-	// Go targets.
-	case "go-mod-tidy":
-		return goModTidy(ctx, cfg)
-	case "go-format":
-		return goFormat(ctx, cfg)
-	case "go-lint":
-		return goLint(ctx, cfg)
-	case "go-test":
-		return goTest(ctx, cfg)
-	case "go-vulncheck":
-		return goVulncheck(ctx, cfg)
-	// Python targets.
-	case "python-sync":
-		return pythonSync(ctx, cfg)
-	case "python-format":
-		return pythonFormat(ctx, cfg)
-	case "python-lint":
-		return pythonLint(ctx, cfg)
-	case "python-mypy":
-		return pythonMypy(ctx, cfg)
-	case "python-test":
-		return pythonTest(ctx, cfg)
-	// Lua targets.
-	case "lua-format":
-		return luaFormat(ctx, cfg)
-	// Orchestration targets.
-	case "run-serial":
-		return RunSerial(ctx, cfg)
-	case "run-parallel":
-		return RunParallel(ctx, cfg)
-	default:
-		return fmt.Errorf("%w: %s", ErrUnknownTarget, target)
-	}
-}
 
 // --- Orchestration ---
 
@@ -68,21 +18,21 @@ func RunSerial(ctx context.Context, cfg config.Config) error {
 	var deps []any
 	if len(cfg.GoModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return goModTidy(ctx, cfg) },
-			func(ctx context.Context) error { return goFormat(ctx, cfg) },
-			func(ctx context.Context) error { return goLint(ctx, cfg) },
+			func(ctx context.Context) error { return GoModTidy(ctx, cfg) },
+			func(ctx context.Context) error { return GoFormat(ctx, cfg) },
+			func(ctx context.Context) error { return GoLint(ctx, cfg) },
 		)
 	}
 	if len(cfg.PythonModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return pythonSync(ctx, cfg) },
-			func(ctx context.Context) error { return pythonFormat(ctx, cfg) },
-			func(ctx context.Context) error { return pythonLint(ctx, cfg) },
+			func(ctx context.Context) error { return PythonSync(ctx, cfg) },
+			func(ctx context.Context) error { return PythonFormat(ctx, cfg) },
+			func(ctx context.Context) error { return PythonLint(ctx, cfg) },
 		)
 	}
 	if len(cfg.LuaModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return luaFormat(ctx, cfg) },
+			func(ctx context.Context) error { return LuaFormat(ctx, cfg) },
 		)
 	}
 	if len(deps) > 0 {
@@ -96,14 +46,14 @@ func RunParallel(ctx context.Context, cfg config.Config) error {
 	var deps []any
 	if len(cfg.GoModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return goTest(ctx, cfg) },
-			func(ctx context.Context) error { return goVulncheck(ctx, cfg) },
+			func(ctx context.Context) error { return GoTest(ctx, cfg) },
+			func(ctx context.Context) error { return GoVulncheck(ctx, cfg) },
 		)
 	}
 	if len(cfg.PythonModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return pythonMypy(ctx, cfg) },
-			func(ctx context.Context) error { return pythonTest(ctx, cfg) },
+			func(ctx context.Context) error { return PythonMypy(ctx, cfg) },
+			func(ctx context.Context) error { return PythonTest(ctx, cfg) },
 		)
 	}
 	if len(deps) > 0 {
@@ -156,6 +106,11 @@ func UpdateSageCi(ctx context.Context, cfg config.Config) error {
 		if err := tidyCmd.Run(); err != nil {
 			return fmt.Errorf("go mod tidy: %w", err)
 		}
+	}
+
+	sg.Logger(ctx).Println("generating targets.gen.go...")
+	if err := GenerateTargetsFile(cfg, sg.FromGitRoot(".sage")); err != nil {
+		return fmt.Errorf("generate targets file: %w", err)
 	}
 
 	sg.Logger(ctx).Println("regenerating Makefile(s)...")

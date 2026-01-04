@@ -9,7 +9,8 @@ import (
 	"go.einride.tech/sage/tools/sggo"
 )
 
-func goModTidy(ctx context.Context, cfg config.Config) error {
+// GoModTidy runs go mod tidy for all configured Go modules.
+func GoModTidy(ctx context.Context, cfg config.Config) error {
 	for _, module := range cfg.GoModules {
 		if cfg.SkipTargets.ShouldSkip("GoModTidy", module) {
 			continue
@@ -24,7 +25,8 @@ func goModTidy(ctx context.Context, cfg config.Config) error {
 	return nil
 }
 
-func goLint(ctx context.Context, cfg config.Config) error {
+// GoLint runs golangci-lint for all configured Go modules.
+func GoLint(ctx context.Context, cfg config.Config) error {
 	for _, module := range cfg.GoModules {
 		if cfg.SkipTargets.ShouldSkip("GoLint", module) {
 			continue
@@ -39,7 +41,8 @@ func goLint(ctx context.Context, cfg config.Config) error {
 	return nil
 }
 
-func goFormat(ctx context.Context, cfg config.Config) error {
+// GoFormat runs gofmt for all configured Go modules.
+func GoFormat(ctx context.Context, cfg config.Config) error {
 	for _, module := range cfg.GoModules {
 		if cfg.SkipTargets.ShouldSkip("GoFormat", module) {
 			continue
@@ -54,7 +57,8 @@ func goFormat(ctx context.Context, cfg config.Config) error {
 	return nil
 }
 
-func goTest(ctx context.Context, cfg config.Config) error {
+// GoTest runs go test for all configured Go modules.
+func GoTest(ctx context.Context, cfg config.Config) error {
 	for _, module := range cfg.GoModules {
 		if cfg.SkipTargets.ShouldSkip("GoTest", module) {
 			continue
@@ -69,7 +73,8 @@ func goTest(ctx context.Context, cfg config.Config) error {
 	return nil
 }
 
-func goVulncheck(ctx context.Context, cfg config.Config) error {
+// GoVulncheck runs govulncheck for all configured Go modules.
+func GoVulncheck(ctx context.Context, cfg config.Config) error {
 	for _, module := range cfg.GoModules {
 		if cfg.SkipTargets.ShouldSkip("GoVulncheck", module) {
 			continue
