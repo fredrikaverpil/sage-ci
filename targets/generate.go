@@ -53,7 +53,17 @@ import (
 func {{.Name}}(ctx context.Context) error {
 	return targets.{{.Name}}(ctx, cfg)
 }
-{{end}}`
+{{end}}
+// GenerateWorkflows regenerates CI workflows for the configured platform.
+func GenerateWorkflows(ctx context.Context) error {
+	return targets.GenerateWorkflows(cfg)
+}
+
+// UpdateSageCi updates the sage-ci dependency and regenerates Makefiles and workflows.
+func UpdateSageCi(ctx context.Context) error {
+	return targets.UpdateSageCi(ctx, cfg)
+}
+`
 
 // GenerateTargetsFile generates a targets.gen.go file in the specified directory.
 // It only includes targets for ecosystems that have modules configured.

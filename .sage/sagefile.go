@@ -22,15 +22,12 @@ func main() {
 }
 
 func All(ctx context.Context) error {
-	targets.RunSerial(ctx, cfg)
-	targets.RunParallel(ctx, cfg)
-	return targets.GitDiffCheck(ctx)
-}
-
-func GenerateWorkflows(ctx context.Context) error {
-	return targets.GenerateWorkflows(cfg)
-}
-
-func UpdateSageCi(ctx context.Context) error {
-	return targets.UpdateSageCi(ctx, cfg)
+	if err := targets.RunSerial(ctx, cfg); err != nil {
+		return err
+	}
+	if err := targets.RunParallel(ctx, cfg); err != nil {
+		return err
+	}
+	sg.Deps(ctx, targets.GitDiffCheckTarget())
+	return nil
 }
