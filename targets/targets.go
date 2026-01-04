@@ -11,6 +11,29 @@ import (
 	"go.einride.tech/sage/sg"
 )
 
+// --- Named target wrapper ---
+
+// namedTarget wraps a function with an explicit name to implement sg.Target.
+type namedTarget struct {
+	name string
+	fn   func(ctx context.Context) error
+}
+
+// Name returns the display name for this target.
+func (t namedTarget) Name() string {
+	return t.name
+}
+
+// ID returns a unique identifier for this target.
+func (t namedTarget) ID() string {
+	return t.name
+}
+
+// Run executes the target function.
+func (t namedTarget) Run(ctx context.Context) error {
+	return t.fn(ctx)
+}
+
 // --- Orchestration ---
 
 // RunSerial runs all mutating targets serially for configured ecosystems.
@@ -18,21 +41,21 @@ func RunSerial(ctx context.Context, cfg config.Config) error {
 	var deps []any
 	if len(cfg.GoModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return GoModTidy(ctx, cfg) },
-			func(ctx context.Context) error { return GoFormat(ctx, cfg) },
-			func(ctx context.Context) error { return GoLint(ctx, cfg) },
+			namedTarget{"GoModTidy", func(ctx context.Context) error { return GoModTidy(ctx, cfg) }},
+			namedTarget{"GoFormat", func(ctx context.Context) error { return GoFormat(ctx, cfg) }},
+			namedTarget{"GoLint", func(ctx context.Context) error { return GoLint(ctx, cfg) }},
 		)
 	}
 	if len(cfg.PythonModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return PythonSync(ctx, cfg) },
-			func(ctx context.Context) error { return PythonFormat(ctx, cfg) },
-			func(ctx context.Context) error { return PythonLint(ctx, cfg) },
+			namedTarget{"PythonSync", func(ctx context.Context) error { return PythonSync(ctx, cfg) }},
+			namedTarget{"PythonFormat", func(ctx context.Context) error { return PythonFormat(ctx, cfg) }},
+			namedTarget{"PythonLint", func(ctx context.Context) error { return PythonLint(ctx, cfg) }},
 		)
 	}
 	if len(cfg.LuaModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return LuaFormat(ctx, cfg) },
+			namedTarget{"LuaFormat", func(ctx context.Context) error { return LuaFormat(ctx, cfg) }},
 		)
 	}
 	if len(deps) > 0 {
@@ -46,14 +69,14 @@ func RunParallel(ctx context.Context, cfg config.Config) error {
 	var deps []any
 	if len(cfg.GoModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return GoTest(ctx, cfg) },
-			func(ctx context.Context) error { return GoVulncheck(ctx, cfg) },
+			namedTarget{"GoTest", func(ctx context.Context) error { return GoTest(ctx, cfg) }},
+			namedTarget{"GoVulncheck", func(ctx context.Context) error { return GoVulncheck(ctx, cfg) }},
 		)
 	}
 	if len(cfg.PythonModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return PythonMypy(ctx, cfg) },
-			func(ctx context.Context) error { return PythonTest(ctx, cfg) },
+			namedTarget{"PythonMypy", func(ctx context.Context) error { return PythonMypy(ctx, cfg) }},
+			namedTarget{"PythonTest", func(ctx context.Context) error { return PythonTest(ctx, cfg) }},
 		)
 	}
 	if len(deps) > 0 {
