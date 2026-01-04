@@ -102,12 +102,16 @@ func PrepareCommand(ctx context.Context) error {
 	return nil
 }
 
-func downloadGzipBinary(url, destDir, binaryName string) error {
+func downloadGzipBinary(url, destDir, binaryName string) (err error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if cerr := resp.Body.Close(); cerr != nil && err == nil {
+			err = cerr
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("unexpected status: %s", resp.Status)
@@ -117,7 +121,11 @@ func downloadGzipBinary(url, destDir, binaryName string) error {
 	if err != nil {
 		return err
 	}
-	defer gr.Close()
+	defer func() {
+		if cerr := gr.Close(); cerr != nil && err == nil {
+			err = cerr
+		}
+	}()
 
 	if err := os.MkdirAll(destDir, 0o755); err != nil {
 		return err
@@ -128,7 +136,11 @@ func downloadGzipBinary(url, destDir, binaryName string) error {
 	if err != nil {
 		return err
 	}
-	defer out.Close()
+	defer func() {
+		if cerr := out.Close(); cerr != nil && err == nil {
+			err = cerr
+		}
+	}()
 
 	if _, err := io.Copy(out, gr); err != nil {
 		return err
