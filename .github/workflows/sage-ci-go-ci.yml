@@ -6,6 +6,7 @@ on:
   push:
     branches: [main]
   pull_request:
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -20,7 +21,7 @@ jobs:
           go-version: stable
           cache: false
       - name: golangci-lint
-        run: make run target=go-lint
+        run: make go-lint
         working-directory: ${{ matrix.module }}
 
   format:
@@ -36,7 +37,7 @@ jobs:
           go-version: stable
           cache: false
       - name: format-check
-        run: make run target=go-format
+        run: make go-format
         working-directory: ${{ matrix.module }}
 
   test:
@@ -54,7 +55,7 @@ jobs:
           go-version: ${{ matrix.go }}
           cache: false
       - name: test
-        run: make run target=go-test
+        run: make go-test
         working-directory: ${{ matrix.module }}
 
   vulncheck:
@@ -70,5 +71,5 @@ jobs:
           go-version: stable
           cache: false
       - name: govulncheck
-        run: make run target=go-vulncheck
+        run: make go-vulncheck
         working-directory: ${{ matrix.module }}
