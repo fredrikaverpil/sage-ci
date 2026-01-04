@@ -17,7 +17,7 @@ var ErrUnknownTarget = fmt.Errorf("unknown target")
 
 // Run executes a target by name. The target parameter uses kebab-case naming
 // (e.g., "go-format", "python-lint") which maps to the corresponding function
-// (e.g., GoFormat, PythonLint).
+// (e.g., goFormat, pythonLint).
 //
 // Available targets:
 //   - go-mod-tidy, go-format, go-lint, go-test, go-vulncheck
@@ -28,29 +28,29 @@ func Run(ctx context.Context, cfg config.Config, skip SkipTargets, target string
 	switch strings.ToLower(target) {
 	// Go targets.
 	case "go-mod-tidy":
-		return GoModTidy(ctx, cfg, skip)
+		return goModTidy(ctx, cfg, skip)
 	case "go-format":
-		return GoFormat(ctx, cfg, skip)
+		return goFormat(ctx, cfg, skip)
 	case "go-lint":
-		return GoLint(ctx, cfg, skip)
+		return goLint(ctx, cfg, skip)
 	case "go-test":
-		return GoTest(ctx, cfg, skip)
+		return goTest(ctx, cfg, skip)
 	case "go-vulncheck":
-		return GoVulncheck(ctx, cfg, skip)
+		return goVulncheck(ctx, cfg, skip)
 	// Python targets.
 	case "python-sync":
-		return PythonSync(ctx, cfg, skip)
+		return pythonSync(ctx, cfg, skip)
 	case "python-format":
-		return PythonFormat(ctx, cfg, skip)
+		return pythonFormat(ctx, cfg, skip)
 	case "python-lint":
-		return PythonLint(ctx, cfg, skip)
+		return pythonLint(ctx, cfg, skip)
 	case "python-mypy":
-		return PythonMypy(ctx, cfg, skip)
+		return pythonMypy(ctx, cfg, skip)
 	case "python-test":
-		return PythonTest(ctx, cfg, skip)
+		return pythonTest(ctx, cfg, skip)
 	// Lua targets.
 	case "lua-format":
-		return LuaFormat(ctx, cfg, skip)
+		return luaFormat(ctx, cfg, skip)
 	// Orchestration targets.
 	case "run-serial":
 		return RunSerial(ctx, cfg, skip)
@@ -87,21 +87,21 @@ func RunSerial(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	var deps []interface{}
 	if len(cfg.GoModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return GoModTidy(ctx, cfg, skip) },
-			func(ctx context.Context) error { return GoFormat(ctx, cfg, skip) },
-			func(ctx context.Context) error { return GoLint(ctx, cfg, skip) },
+			func(ctx context.Context) error { return goModTidy(ctx, cfg, skip) },
+			func(ctx context.Context) error { return goFormat(ctx, cfg, skip) },
+			func(ctx context.Context) error { return goLint(ctx, cfg, skip) },
 		)
 	}
 	if len(cfg.PythonModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return PythonSync(ctx, cfg, skip) },
-			func(ctx context.Context) error { return PythonFormat(ctx, cfg, skip) },
-			func(ctx context.Context) error { return PythonLint(ctx, cfg, skip) },
+			func(ctx context.Context) error { return pythonSync(ctx, cfg, skip) },
+			func(ctx context.Context) error { return pythonFormat(ctx, cfg, skip) },
+			func(ctx context.Context) error { return pythonLint(ctx, cfg, skip) },
 		)
 	}
 	if len(cfg.LuaModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return LuaFormat(ctx, cfg, skip) },
+			func(ctx context.Context) error { return luaFormat(ctx, cfg, skip) },
 		)
 	}
 	if len(deps) > 0 {
@@ -112,17 +112,17 @@ func RunSerial(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 
 // RunParallel runs all non-mutating targets in parallel for configured ecosystems.
 func RunParallel(ctx context.Context, cfg config.Config, skip SkipTargets) error {
-	var deps []any
+	var deps []interface{}
 	if len(cfg.GoModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return GoTest(ctx, cfg, skip) },
-			func(ctx context.Context) error { return GoVulncheck(ctx, cfg, skip) },
+			func(ctx context.Context) error { return goTest(ctx, cfg, skip) },
+			func(ctx context.Context) error { return goVulncheck(ctx, cfg, skip) },
 		)
 	}
 	if len(cfg.PythonModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return PythonMypy(ctx, cfg, skip) },
-			func(ctx context.Context) error { return PythonTest(ctx, cfg, skip) },
+			func(ctx context.Context) error { return pythonMypy(ctx, cfg, skip) },
+			func(ctx context.Context) error { return pythonTest(ctx, cfg, skip) },
 		)
 	}
 	if len(deps) > 0 {

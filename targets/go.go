@@ -9,8 +9,7 @@ import (
 	"go.einride.tech/sage/tools/sggo"
 )
 
-// GoModTidy runs go mod tidy.
-func GoModTidy(ctx context.Context, cfg config.Config, skip SkipTargets) error {
+func goModTidy(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	for _, module := range cfg.GoModules {
 		if skip.ShouldSkip("GoModTidy", module) {
 			continue
@@ -25,8 +24,7 @@ func GoModTidy(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	return nil
 }
 
-// GoLint runs golangci-lint with --fix.
-func GoLint(ctx context.Context, cfg config.Config, skip SkipTargets) error {
+func goLint(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	for _, module := range cfg.GoModules {
 		if skip.ShouldSkip("GoLint", module) {
 			continue
@@ -41,8 +39,7 @@ func GoLint(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	return nil
 }
 
-// GoFormat applies Go formatting using gofmt.
-func GoFormat(ctx context.Context, cfg config.Config, skip SkipTargets) error {
+func goFormat(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	for _, module := range cfg.GoModules {
 		if skip.ShouldSkip("GoFormat", module) {
 			continue
@@ -57,8 +54,7 @@ func GoFormat(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	return nil
 }
 
-// GoTest runs Go tests.
-func GoTest(ctx context.Context, cfg config.Config, skip SkipTargets) error {
+func goTest(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	for _, module := range cfg.GoModules {
 		if skip.ShouldSkip("GoTest", module) {
 			continue
@@ -73,8 +69,7 @@ func GoTest(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	return nil
 }
 
-// GoVulncheck runs govulncheck.
-func GoVulncheck(ctx context.Context, cfg config.Config, skip SkipTargets) error {
+func goVulncheck(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	for _, module := range cfg.GoModules {
 		if skip.ShouldSkip("GoVulncheck", module) {
 			continue
