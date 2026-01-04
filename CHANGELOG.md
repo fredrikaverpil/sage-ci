@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/fredrikaverpil/sage-ci/compare/v0.1.3...v0.2.0) (2026-01-04)
+
+
+### Features
+
+* skipping targets also skips workflow jobs ([a56f2f6](https://github.com/fredrikaverpil/sage-ci/commit/a56f2f65a57f8859c5ad5445b6b52a285bcee712))
+
 ## [0.1.3](https://github.com/fredrikaverpil/sage-ci/compare/v0.1.2...v0.1.3) (2026-01-04)
 
 
