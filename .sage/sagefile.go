@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 
+	"github.com/fredrikaverpil/sage-ci/config"
 	"github.com/fredrikaverpil/sage-ci/targets"
-	"github.com/fredrikaverpil/sage-ci/workflows"
 	"go.einride.tech/sage/sg"
 )
 
-var cfg = workflows.Config{
+var cfg = config.Config{
 	GoModules: []string{"."},
 }
 
@@ -30,9 +30,9 @@ func All(ctx context.Context) error {
 	return targets.GitDiffCheck(ctx)
 }
 
-// Sync regenerates GitHub Actions workflows.
+// Sync regenerates CI workflows for the configured platform.
 func Sync(ctx context.Context) error {
-	return targets.GenerateGHA(cfg)
+	return targets.SyncWorkflows(cfg)
 }
 
 func RunSerial(ctx context.Context) error {

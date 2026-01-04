@@ -1,4 +1,4 @@
-package workflows
+package github
 
 import (
 	"bytes"
@@ -11,6 +11,8 @@ import (
 	"strings"
 	"text/template"
 	"time"
+
+	"github.com/fredrikaverpil/sage-ci/config"
 )
 
 type templateData struct {
@@ -34,9 +36,9 @@ type templateData struct {
 	HasLua    bool
 }
 
-func render(cfg Config) error {
+func render(cfg config.Config) error {
 	data := templateData{
-		GeneratedBy:    "sage-ci", // TODO: Add version
+		GeneratedBy:    "sage-ci",
 		Timestamp:      time.Now().Format(time.RFC3339),
 		GoModules:      cfg.GoModules,
 		PythonModules:  cfg.PythonModules,
@@ -44,9 +46,9 @@ func render(cfg Config) error {
 		GoVersions:     cfg.GoVersions,
 		PythonVersions: cfg.PythonVersions,
 		OSVersions:     cfg.OSVersions,
-		HasGo:          len(cfg.GoModules) > 0,
-		HasPython:      len(cfg.PythonModules) > 0,
-		HasLua:         len(cfg.LuaModules) > 0,
+		HasGo:          cfg.HasGo(),
+		HasPython:      cfg.HasPython(),
+		HasLua:         cfg.HasLua(),
 	}
 
 	funcMap := template.FuncMap{
@@ -58,6 +60,7 @@ func render(cfg Config) error {
 			return string(b), nil
 		},
 	}
+
 	// Walk the templates directory
 	err := fs.WalkDir(templatesFS, "templates", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -67,7 +70,7 @@ func render(cfg Config) error {
 			return nil
 		}
 
-		// Skip hidden files or non-templates if any
+		// Skip hidden files or non-templates
 		if !strings.HasSuffix(path, ".tmpl") {
 			return nil
 		}

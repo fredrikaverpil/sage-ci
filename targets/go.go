@@ -3,14 +3,14 @@ package targets
 import (
 	"context"
 
+	"github.com/fredrikaverpil/sage-ci/config"
 	"github.com/fredrikaverpil/sage-ci/tools/sggolangcilint"
-	"github.com/fredrikaverpil/sage-ci/workflows"
 	"go.einride.tech/sage/sg"
 	"go.einride.tech/sage/tools/sggo"
 )
 
 // GoModTidy runs go mod tidy.
-func GoModTidy(ctx context.Context, cfg workflows.Config, skip SkipTargets) error {
+func GoModTidy(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	for _, module := range cfg.GoModules {
 		if skip.ShouldSkip("GoModTidy", module) {
 			continue
@@ -26,7 +26,7 @@ func GoModTidy(ctx context.Context, cfg workflows.Config, skip SkipTargets) erro
 }
 
 // GoLint runs golangci-lint with --fix.
-func GoLint(ctx context.Context, cfg workflows.Config, skip SkipTargets) error {
+func GoLint(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	for _, module := range cfg.GoModules {
 		if skip.ShouldSkip("GoLint", module) {
 			continue
@@ -42,7 +42,7 @@ func GoLint(ctx context.Context, cfg workflows.Config, skip SkipTargets) error {
 }
 
 // GoFormat applies Go formatting using gofmt.
-func GoFormat(ctx context.Context, cfg workflows.Config, skip SkipTargets) error {
+func GoFormat(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	for _, module := range cfg.GoModules {
 		if skip.ShouldSkip("GoFormat", module) {
 			continue
@@ -58,7 +58,7 @@ func GoFormat(ctx context.Context, cfg workflows.Config, skip SkipTargets) error
 }
 
 // GoTest runs Go tests.
-func GoTest(ctx context.Context, cfg workflows.Config, skip SkipTargets) error {
+func GoTest(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	for _, module := range cfg.GoModules {
 		if skip.ShouldSkip("GoTest", module) {
 			continue
@@ -74,7 +74,7 @@ func GoTest(ctx context.Context, cfg workflows.Config, skip SkipTargets) error {
 }
 
 // GoVulncheck runs govulncheck.
-func GoVulncheck(ctx context.Context, cfg workflows.Config, skip SkipTargets) error {
+func GoVulncheck(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	for _, module := range cfg.GoModules {
 		if skip.ShouldSkip("GoVulncheck", module) {
 			continue

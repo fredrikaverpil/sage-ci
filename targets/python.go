@@ -3,13 +3,13 @@ package targets
 import (
 	"context"
 
-	"github.com/fredrikaverpil/sage-ci/workflows"
+	"github.com/fredrikaverpil/sage-ci/config"
 	"go.einride.tech/sage/sg"
 	"go.einride.tech/sage/tools/sguv"
 )
 
 // PythonSync runs uv sync to install dependencies.
-func PythonSync(ctx context.Context, cfg workflows.Config, skip SkipTargets) error {
+func PythonSync(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	for _, module := range cfg.PythonModules {
 		if skip.ShouldSkip("PythonSync", module) {
 			continue
@@ -25,7 +25,7 @@ func PythonSync(ctx context.Context, cfg workflows.Config, skip SkipTargets) err
 }
 
 // PythonFormat applies Python formatting using ruff format.
-func PythonFormat(ctx context.Context, cfg workflows.Config, skip SkipTargets) error {
+func PythonFormat(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	sg.Deps(ctx, func(ctx context.Context) error { return PythonSync(ctx, cfg, skip) })
 	for _, module := range cfg.PythonModules {
 		if skip.ShouldSkip("PythonFormat", module) {
@@ -42,7 +42,7 @@ func PythonFormat(ctx context.Context, cfg workflows.Config, skip SkipTargets) e
 }
 
 // PythonLint runs ruff check with --fix.
-func PythonLint(ctx context.Context, cfg workflows.Config, skip SkipTargets) error {
+func PythonLint(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	sg.Deps(ctx, func(ctx context.Context) error { return PythonSync(ctx, cfg, skip) })
 	for _, module := range cfg.PythonModules {
 		if skip.ShouldSkip("PythonLint", module) {
@@ -59,7 +59,7 @@ func PythonLint(ctx context.Context, cfg workflows.Config, skip SkipTargets) err
 }
 
 // PythonMypy runs mypy type checking.
-func PythonMypy(ctx context.Context, cfg workflows.Config, skip SkipTargets) error {
+func PythonMypy(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	sg.Deps(ctx, func(ctx context.Context) error { return PythonSync(ctx, cfg, skip) })
 	for _, module := range cfg.PythonModules {
 		if skip.ShouldSkip("PythonMypy", module) {
@@ -76,7 +76,7 @@ func PythonMypy(ctx context.Context, cfg workflows.Config, skip SkipTargets) err
 }
 
 // PythonTest runs pytest.
-func PythonTest(ctx context.Context, cfg workflows.Config, skip SkipTargets) error {
+func PythonTest(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	sg.Deps(ctx, func(ctx context.Context) error { return PythonSync(ctx, cfg, skip) })
 	for _, module := range cfg.PythonModules {
 		if skip.ShouldSkip("PythonTest", module) {

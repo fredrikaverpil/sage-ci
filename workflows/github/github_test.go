@@ -1,9 +1,11 @@
-package workflows
+package github
 
 import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/fredrikaverpil/sage-ci/config"
 )
 
 func TestSync(t *testing.T) {
@@ -13,7 +15,7 @@ func TestSync(t *testing.T) {
 	}
 	t.Cleanup(func() { _ = os.RemoveAll(tmpDir) })
 
-	cfg := Config{
+	cfg := config.Config{
 		GoModules: []string{"."},
 		OutputDir: tmpDir,
 	}
@@ -62,7 +64,7 @@ func TestSync(t *testing.T) {
 	tmpDir3, _ := os.MkdirTemp("", "sage-ci-test-ecosystem-*")
 	t.Cleanup(func() { _ = os.RemoveAll(tmpDir3) })
 
-	cfgNoGo := Config{
+	cfgNoGo := config.Config{
 		OutputDir: tmpDir3,
 		// No GoModules, PythonModules, or LuaModules
 	}

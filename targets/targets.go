@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/fredrikaverpil/sage-ci/workflows"
+	"github.com/fredrikaverpil/sage-ci/config"
+	"github.com/fredrikaverpil/sage-ci/workflows/github"
 	"go.einride.tech/sage/sg"
 )
 
@@ -32,7 +33,7 @@ func (s SkipTargets) ShouldSkip(target, module string) bool {
 // --- Orchestration ---
 
 // RunSerial runs all mutating targets serially for configured ecosystems.
-func RunSerial(ctx context.Context, cfg workflows.Config, skip SkipTargets) error {
+func RunSerial(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	if len(cfg.GoModules) > 0 {
 		sg.SerialDeps(ctx,
 			func(ctx context.Context) error { return GoModTidy(ctx, cfg, skip) },
@@ -56,7 +57,7 @@ func RunSerial(ctx context.Context, cfg workflows.Config, skip SkipTargets) erro
 }
 
 // RunParallel runs all non-mutating targets in parallel for configured ecosystems.
-func RunParallel(ctx context.Context, cfg workflows.Config, skip SkipTargets) error {
+func RunParallel(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	if len(cfg.GoModules) > 0 && len(cfg.PythonModules) > 0 {
 		sg.Deps(ctx,
 			func(ctx context.Context) error { return GoTest(ctx, cfg, skip) },
@@ -80,9 +81,25 @@ func RunParallel(ctx context.Context, cfg workflows.Config, skip SkipTargets) er
 
 // --- Generate targets ---
 
+// SyncWorkflows generates CI workflows for the configured platform.
+// Defaults to GitHub if no platform is specified.
+func SyncWorkflows(cfg config.Config) error {
+	switch cfg.Platform {
+	case config.PlatformGitLab:
+		return fmt.Errorf("gitlab workflows not yet implemented")
+	case config.PlatformCodeberg:
+		return fmt.Errorf("codeberg workflows not yet implemented")
+	case config.PlatformGitHub, "":
+		return github.Sync(cfg)
+	default:
+		return fmt.Errorf("unknown platform: %s", cfg.Platform)
+	}
+}
+
 // GenerateGHA generates GitHub Actions workflows.
-func GenerateGHA(cfg workflows.Config) error {
-	return workflows.Sync(cfg)
+// Deprecated: Use SyncWorkflows instead.
+func GenerateGHA(cfg config.Config) error {
+	return github.Sync(cfg)
 }
 
 // --- Utility targets ---

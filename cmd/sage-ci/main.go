@@ -8,7 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/fredrikaverpil/sage-ci/workflows"
+	"github.com/fredrikaverpil/sage-ci/config"
+	"github.com/fredrikaverpil/sage-ci/workflows/github"
 	"gopkg.in/yaml.v3"
 )
 
@@ -86,7 +87,7 @@ func runSync(args []string) error {
 		return err
 	}
 
-	var cfg workflows.Config
+	var cfg config.Config
 
 	// Load from config file if provided
 	if *configFile != "" {
@@ -116,5 +117,5 @@ func runSync(args []string) error {
 		cfg.OutputDir = *outputDir
 	}
 
-	return workflows.Sync(cfg)
+	return github.Sync(cfg)
 }
