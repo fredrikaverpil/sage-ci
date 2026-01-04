@@ -165,3 +165,8 @@ func GitDiffCheck(ctx context.Context) error {
 	_ = sg.Command(ctx, "git", "diff").Run()
 	return fmt.Errorf("uncommitted changes detected")
 }
+
+// GitDiffCheckTarget returns GitDiffCheck as a named target for use with sg.Deps.
+func GitDiffCheckTarget() sg.Target {
+	return namedTarget{"GitDiffCheck", GitDiffCheck}
+}
