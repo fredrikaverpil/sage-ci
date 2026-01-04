@@ -77,6 +77,18 @@ Either wait until the `sage-ci-sync.yml` workflow runs, or run manually:
 make update-sage-ci
 ```
 
+## GitHub Actions permissions
+
+The generated workflows (e.g., `release.yml`, `sage-ci-sync.yml`) require write
+access to create branches and pull requests. To enable this:
+
+1. Go to your repository **Settings** → **Actions** → **General**
+2. Under **Workflow permissions**, select **Read and write permissions**
+3. Check **Allow GitHub Actions to create and approve pull requests**
+
+Without these permissions, workflows will fail with a 403 "Resource not
+accessible by integration" error.
+
 ## Renovate tool updates
 
 Each tool lives in `tools/<toolname>/tool.go` and follows this pattern:
