@@ -1,9 +1,7 @@
-# sage-ci
+# sage-ci (powered by [Sage](https://github.com/einride/sage) 🌿)
 
 This repo holds tools and configurations which I want synced across several
 projects.
-
-The engine powering everything is [Sage](https://github.com/einride/sage) 🌿.
 
 ## Quickstart
 
