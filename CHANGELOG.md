@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.3](https://github.com/fredrikaverpil/sage-ci/compare/v0.1.2...v0.1.3) (2026-01-04)
+
+
+### Bug Fixes
+
+* remove duplicate ([caed87d](https://github.com/fredrikaverpil/sage-ci/commit/caed87dcdd5fbb7d04b44386bd0e816ee37f8bb3))
+* remove duplicate ([17feae8](https://github.com/fredrikaverpil/sage-ci/commit/17feae80c67ee627a5ac5c7a783ba073115805b9))
+
 ## [0.1.2](https://github.com/fredrikaverpil/sage-ci/compare/v0.1.1...v0.1.2) (2026-01-04)
 
 
