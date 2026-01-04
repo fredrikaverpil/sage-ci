@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/fredrikaverpil/sage-ci/compare/v0.3.0...v0.4.0) (2026-01-04)
+
+
+### Features
+
+* **tool:** add tree-sitter-cli ([4953461](https://github.com/fredrikaverpil/sage-ci/commit/49534617a40474cbd50b2ee84987766d30dbc053))
+
+
+### Bug Fixes
+
+* linting ([b049e59](https://github.com/fredrikaverpil/sage-ci/commit/b049e59a2745da6d365176eb1d3aa9ed5a7dd4f7))
+* remove path matrices ([6dd97db](https://github.com/fredrikaverpil/sage-ci/commit/6dd97dba1d24156eba5358db9bfcb8aef25bf989))
+* sync workflow ([f91d5b7](https://github.com/fredrikaverpil/sage-ci/commit/f91d5b76eb11e98739d1c834581a0d0e662877ef))
+
 ## [0.3.0](https://github.com/fredrikaverpil/sage-ci/compare/v0.2.0...v0.3.0) (2026-01-04)
 
 
