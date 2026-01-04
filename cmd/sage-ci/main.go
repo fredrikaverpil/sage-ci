@@ -65,13 +65,18 @@ func runInit(args []string) error {
 
 	fmt.Println("Initialized .sage/go.mod and .sage/sagefile.go")
 
-	fmt.Println("Running go get -u ./... in .sage/...")
-	getCmd := exec.Command("go", "get", "-u", "./...")
-	getCmd.Dir = ".sage"
-	getCmd.Stdout = os.Stdout
-	getCmd.Stderr = os.Stderr
-	if err := getCmd.Run(); err != nil {
-		return fmt.Errorf("go get -u: %w", err)
+	fmt.Println("Running go get in .sage/...")
+	for _, pkg := range []string{
+		"github.com/fredrikaverpil/sage-ci@latest",
+		"go.einride.tech/sage@latest",
+	} {
+		getCmd := exec.Command("go", "get", pkg)
+		getCmd.Dir = ".sage"
+		getCmd.Stdout = os.Stdout
+		getCmd.Stderr = os.Stderr
+		if err := getCmd.Run(); err != nil {
+			return fmt.Errorf("go get %s: %w", pkg, err)
+		}
 	}
 
 	fmt.Println("Running go mod tidy in .sage/...")
