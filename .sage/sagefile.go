@@ -9,7 +9,8 @@ import (
 )
 
 var cfg = config.Config{
-	GoModules: []string{"."},
+	GoModules:     []string{"."},
+	SkipWorkflows: []string{"sage-ci-sync"},
 }
 
 func main() {
