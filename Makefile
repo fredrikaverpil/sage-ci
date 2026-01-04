@@ -47,13 +47,13 @@ clean-sage:
 all: $(sagefile)
 	@$(sagefile) All
 
+.PHONY: build-sage-ci
+build-sage-ci: $(sagefile)
+	@$(sagefile) BuildSageCI
+
 .PHONY: generate-workflows
 generate-workflows: $(sagefile)
 	@$(sagefile) GenerateWorkflows
-
-.PHONY: go-build
-go-build: $(sagefile)
-	@$(sagefile) GoBuild
 
 .PHONY: run-parallel
 run-parallel: $(sagefile)
@@ -62,3 +62,7 @@ run-parallel: $(sagefile)
 .PHONY: run-serial
 run-serial: $(sagefile)
 	@$(sagefile) RunSerial
+
+.PHONY: update-sage-ci
+update-sage-ci: $(sagefile)
+	@$(sagefile) UpdateSageCi

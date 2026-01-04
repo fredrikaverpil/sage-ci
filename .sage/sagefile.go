@@ -25,15 +25,9 @@ func main() {
 }
 
 func All(ctx context.Context) error {
-	sg.Deps(ctx, GenerateWorkflows)
 	sg.Deps(ctx, RunSerial)
 	sg.Deps(ctx, RunParallel)
 	return targets.GitDiffCheck(ctx)
-}
-
-// GenerateWorkflows regenerates CI workflows for the configured platform.
-func GenerateWorkflows(ctx context.Context) error {
-	return targets.GenerateWorkflows(cfg)
 }
 
 func RunSerial(ctx context.Context) error {
@@ -42,4 +36,12 @@ func RunSerial(ctx context.Context) error {
 
 func RunParallel(ctx context.Context) error {
 	return targets.RunParallel(ctx, cfg, skip)
+}
+
+func GenerateWorkflows(ctx context.Context) error {
+	return targets.GenerateWorkflows(cfg)
+}
+
+func UpdateSageCi(ctx context.Context) error {
+	return targets.UpdateSageCi(ctx, cfg)
 }

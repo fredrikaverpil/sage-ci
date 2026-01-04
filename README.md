@@ -11,11 +11,8 @@ projects.
 go run github.com/fredrikaverpil/sage-ci/cmd/sage-ci@latest init
 ```
 
-This creates `.sage/sagefile.go` with your project configuration.
-
-> [!TODO]
->
-> The bootstrapper should create the `.sage/go.mod` as well.
+This creates `.sage/go.mod` and `.sage/sagefile.go` with your project
+configuration.
 
 ### Configure
 

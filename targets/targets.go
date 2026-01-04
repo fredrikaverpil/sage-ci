@@ -98,6 +98,37 @@ func GenerateWorkflows(cfg config.Config) error {
 
 // --- Utility targets ---
 
+// UpdateSageCi updates the sage-ci dependency, regenerates Makefiles and workflows.
+func UpdateSageCi(ctx context.Context, cfg config.Config) error {
+	sg.Logger(ctx).Println("updating sage-ci dependency...")
+	getCmd := sg.Command(ctx, "go", "get", "-u", "github.com/fredrikaverpil/sage-ci@latest")
+	getCmd.Dir = sg.FromGitRoot(".sage")
+	if err := getCmd.Run(); err != nil {
+		return fmt.Errorf("update sage-ci dependency: %w", err)
+	}
+
+	sg.Logger(ctx).Println("running go mod tidy...")
+	tidyCmd := sg.Command(ctx, "go", "mod", "tidy")
+	tidyCmd.Dir = sg.FromGitRoot(".sage")
+	if err := tidyCmd.Run(); err != nil {
+		return fmt.Errorf("go mod tidy: %w", err)
+	}
+
+	sg.Logger(ctx).Println("regenerating Makefile(s)...")
+	makefileCmd := sg.Command(ctx, "go", "run", ".")
+	makefileCmd.Dir = sg.FromGitRoot(".sage")
+	if err := makefileCmd.Run(); err != nil {
+		return fmt.Errorf("regenerate makefiles: %w", err)
+	}
+
+	sg.Logger(ctx).Println("regenerating workflows...")
+	if err := GenerateWorkflows(cfg); err != nil {
+		return fmt.Errorf("regenerate workflows: %w", err)
+	}
+
+	return nil
+}
+
 // GitDiffCheck fails if there are uncommitted changes (only in CI).
 func GitDiffCheck(ctx context.Context) error {
 	hasDiff := sg.Command(ctx, "git", "diff", "--exit-code").Run() != nil ||

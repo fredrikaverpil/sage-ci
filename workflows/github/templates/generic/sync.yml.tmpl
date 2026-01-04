@@ -18,17 +18,10 @@ jobs:
           go-version: stable
 
       - name: Update Sage
-	    run: make update-sage
+        run: make update-sage
 
-      - name: Update sage-ci dependency
-        run: go get -u github.com/fredrikaverpil/sage-ci@latest && go mod tidy
-        working-directory: .sage
-
-      - name: Regenerate Makefile(s)
-        run: make sage
-
-      - name: Generate workflows
-        run: make generate-workflows
+      - name: Update sage-ci
+        run: make update-sage-ci
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
