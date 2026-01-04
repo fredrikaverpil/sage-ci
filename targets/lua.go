@@ -8,9 +8,9 @@ import (
 	"go.einride.tech/sage/sg"
 )
 
-func luaFormat(ctx context.Context, cfg config.Config, skip SkipTargets) error {
+func luaFormat(ctx context.Context, cfg config.Config) error {
 	for _, module := range cfg.LuaModules {
-		if skip.ShouldSkip("LuaFormat", module) {
+		if cfg.SkipTargets.ShouldSkip("LuaFormat", module) {
 			continue
 		}
 		sg.Logger(ctx).Printf("applying stylua format in %s...", module)

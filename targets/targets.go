@@ -24,84 +24,65 @@ var ErrUnknownTarget = fmt.Errorf("unknown target")
 //   - python-sync, python-format, python-lint, python-mypy, python-test
 //   - lua-format
 //   - run-serial, run-parallel
-func Run(ctx context.Context, cfg config.Config, skip SkipTargets, target string) error {
+func Run(ctx context.Context, cfg config.Config, target string) error {
 	switch strings.ToLower(target) {
 	// Go targets.
 	case "go-mod-tidy":
-		return goModTidy(ctx, cfg, skip)
+		return goModTidy(ctx, cfg)
 	case "go-format":
-		return goFormat(ctx, cfg, skip)
+		return goFormat(ctx, cfg)
 	case "go-lint":
-		return goLint(ctx, cfg, skip)
+		return goLint(ctx, cfg)
 	case "go-test":
-		return goTest(ctx, cfg, skip)
+		return goTest(ctx, cfg)
 	case "go-vulncheck":
-		return goVulncheck(ctx, cfg, skip)
+		return goVulncheck(ctx, cfg)
 	// Python targets.
 	case "python-sync":
-		return pythonSync(ctx, cfg, skip)
+		return pythonSync(ctx, cfg)
 	case "python-format":
-		return pythonFormat(ctx, cfg, skip)
+		return pythonFormat(ctx, cfg)
 	case "python-lint":
-		return pythonLint(ctx, cfg, skip)
+		return pythonLint(ctx, cfg)
 	case "python-mypy":
-		return pythonMypy(ctx, cfg, skip)
+		return pythonMypy(ctx, cfg)
 	case "python-test":
-		return pythonTest(ctx, cfg, skip)
+		return pythonTest(ctx, cfg)
 	// Lua targets.
 	case "lua-format":
-		return luaFormat(ctx, cfg, skip)
+		return luaFormat(ctx, cfg)
 	// Orchestration targets.
 	case "run-serial":
-		return RunSerial(ctx, cfg, skip)
+		return RunSerial(ctx, cfg)
 	case "run-parallel":
-		return RunParallel(ctx, cfg, skip)
+		return RunParallel(ctx, cfg)
 	default:
 		return fmt.Errorf("%w: %s", ErrUnknownTarget, target)
 	}
 }
 
-// SkipTargets maps target names to modules that should be skipped.
-// Key: Target name (e.g. "GoTest").
-// Value: List of modules to skip. Use "*" to skip all modules.
-type SkipTargets map[string][]string
-
-// ShouldSkip returns true if the target should be skipped for the given module.
-func (s SkipTargets) ShouldSkip(target, module string) bool {
-	skippedModules, ok := s[target]
-	if !ok {
-		return false
-	}
-	for _, m := range skippedModules {
-		if m == "*" || m == module {
-			return true
-		}
-	}
-	return false
-}
-
 // --- Orchestration ---
 
 // RunSerial runs all mutating targets serially for configured ecosystems.
-func RunSerial(ctx context.Context, cfg config.Config, skip SkipTargets) error {
+func RunSerial(ctx context.Context, cfg config.Config) error {
 	var deps []any
 	if len(cfg.GoModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return goModTidy(ctx, cfg, skip) },
-			func(ctx context.Context) error { return goFormat(ctx, cfg, skip) },
-			func(ctx context.Context) error { return goLint(ctx, cfg, skip) },
+			func(ctx context.Context) error { return goModTidy(ctx, cfg) },
+			func(ctx context.Context) error { return goFormat(ctx, cfg) },
+			func(ctx context.Context) error { return goLint(ctx, cfg) },
 		)
 	}
 	if len(cfg.PythonModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return pythonSync(ctx, cfg, skip) },
-			func(ctx context.Context) error { return pythonFormat(ctx, cfg, skip) },
-			func(ctx context.Context) error { return pythonLint(ctx, cfg, skip) },
+			func(ctx context.Context) error { return pythonSync(ctx, cfg) },
+			func(ctx context.Context) error { return pythonFormat(ctx, cfg) },
+			func(ctx context.Context) error { return pythonLint(ctx, cfg) },
 		)
 	}
 	if len(cfg.LuaModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return luaFormat(ctx, cfg, skip) },
+			func(ctx context.Context) error { return luaFormat(ctx, cfg) },
 		)
 	}
 	if len(deps) > 0 {
@@ -111,18 +92,18 @@ func RunSerial(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 }
 
 // RunParallel runs all non-mutating targets in parallel for configured ecosystems.
-func RunParallel(ctx context.Context, cfg config.Config, skip SkipTargets) error {
+func RunParallel(ctx context.Context, cfg config.Config) error {
 	var deps []any
 	if len(cfg.GoModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return goTest(ctx, cfg, skip) },
-			func(ctx context.Context) error { return goVulncheck(ctx, cfg, skip) },
+			func(ctx context.Context) error { return goTest(ctx, cfg) },
+			func(ctx context.Context) error { return goVulncheck(ctx, cfg) },
 		)
 	}
 	if len(cfg.PythonModules) > 0 {
 		deps = append(deps,
-			func(ctx context.Context) error { return pythonMypy(ctx, cfg, skip) },
-			func(ctx context.Context) error { return pythonTest(ctx, cfg, skip) },
+			func(ctx context.Context) error { return pythonMypy(ctx, cfg) },
+			func(ctx context.Context) error { return pythonTest(ctx, cfg) },
 		)
 	}
 	if len(deps) > 0 {
@@ -133,19 +114,25 @@ func RunParallel(ctx context.Context, cfg config.Config, skip SkipTargets) error
 
 // --- Generate targets ---
 
-// GenerateWorkflows generates CI workflows for the configured platform.
+// GenerateWorkflows generates CI workflows for the configured platforms.
 // Defaults to GitHub if no platform is specified.
 func GenerateWorkflows(cfg config.Config) error {
-	switch cfg.Platform {
-	case config.PlatformGitLab:
-		return fmt.Errorf("gitlab workflows not yet implemented")
-	case config.PlatformCodeberg:
-		return fmt.Errorf("codeberg workflows not yet implemented")
-	case config.PlatformGitHub, "":
-		return github.Sync(cfg)
-	default:
-		return fmt.Errorf("unknown platform: %s", cfg.Platform)
+	cfg = cfg.WithDefaults()
+	for _, platform := range cfg.Platform {
+		switch platform {
+		case config.PlatformGitLab:
+			return fmt.Errorf("gitlab workflows not yet implemented")
+		case config.PlatformCodeberg:
+			return fmt.Errorf("codeberg workflows not yet implemented")
+		case config.PlatformGitHub:
+			if err := github.Sync(cfg); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unknown platform: %s", platform)
+		}
 	}
+	return nil
 }
 
 // --- Utility targets ---

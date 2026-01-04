@@ -26,18 +26,18 @@ var cfg = config.Config{
 	// Platform specifies which CI platform to generate workflows for.
 	// Options: "github", "gitlab", "codeberg"
 	// Default: "github"
-	Platform: config.PlatformGitHub,
+	Platform: []config.Platform{config.PlatformGitHub},
 
 	// Skip lists workflow names to skip during sync.
 	// Example: []string{"lint", "test"}
 	SkipWorkflows: []string{},
-}
 
-// skip lists sage target names to skip.
-// Key: Target name (e.g. "GoTest").
-// Value: List of modules to skip. Use "*" to skip all modules.
-// Example: targets.SkipTargets{"GoLint": {"tools"}}
-var skip = targets.SkipTargets{}
+	// SkipTargets lists sage target names to skip.
+	// Key: Target name (e.g. "GoTest").
+	// Value: List of modules to skip. Use "*" to skip all modules.
+	// Example: config.SkipTargets{"GoLint": {"tools"}}
+	SkipTargets: config.SkipTargets{},
+}
 
 func main() {
 	sg.GenerateMakefiles(
@@ -50,8 +50,8 @@ func main() {
 
 // All is the default target. Customize this to run the targets you need.
 func All(ctx context.Context) error {
-	targets.RunSerial(ctx, cfg, skip)
-	targets.RunParallel(ctx, cfg, skip)
+	targets.RunSerial(ctx, cfg)
+	targets.RunParallel(ctx, cfg)
 	return targets.GitDiffCheck(ctx)
 }
 
@@ -68,5 +68,5 @@ func UpdateSageCi(ctx context.Context) error {
 // Run executes a target by name (e.g., "go-format", "python-lint").
 // Usage: make run target=go-format
 func Run(ctx context.Context, target string) error {
-	return targets.Run(ctx, cfg, skip, target)
+	return targets.Run(ctx, cfg, target)
 }

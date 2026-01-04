@@ -32,6 +32,12 @@ type Config struct {
 	// You can also use a string, and if found, the workflow will be skipped.
 	SkipWorkflows []string
 
+	// SkipTargets lists sage target names to skip.
+	// Key: Target name (e.g. "GoTest").
+	// Value: List of modules to skip. Use "*" to skip all modules.
+	// E.g. SkipTargets{"GoLint": {"tools"}}
+	SkipTargets SkipTargets
+
 	// Options
 	// default: ["stable"]
 	GoVersions []string
@@ -75,4 +81,23 @@ func (c Config) HasPython() bool {
 // HasLua returns true if Lua modules are configured.
 func (c Config) HasLua() bool {
 	return len(c.LuaModules) > 0
+}
+
+// SkipTargets maps target names to modules that should be skipped.
+// Key: Target name (e.g. "GoTest").
+// Value: List of modules to skip. Use "*" to skip all modules.
+type SkipTargets map[string][]string
+
+// ShouldSkip returns true if the target should be skipped for the given module.
+func (s SkipTargets) ShouldSkip(target, module string) bool {
+	skippedModules, ok := s[target]
+	if !ok {
+		return false
+	}
+	for _, m := range skippedModules {
+		if m == "*" || m == module {
+			return true
+		}
+	}
+	return false
 }

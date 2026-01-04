@@ -9,9 +9,9 @@ import (
 	"go.einride.tech/sage/tools/sggo"
 )
 
-func goModTidy(ctx context.Context, cfg config.Config, skip SkipTargets) error {
+func goModTidy(ctx context.Context, cfg config.Config) error {
 	for _, module := range cfg.GoModules {
-		if skip.ShouldSkip("GoModTidy", module) {
+		if cfg.SkipTargets.ShouldSkip("GoModTidy", module) {
 			continue
 		}
 		sg.Logger(ctx).Printf("running go mod tidy in %s...", module)
@@ -24,9 +24,9 @@ func goModTidy(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	return nil
 }
 
-func goLint(ctx context.Context, cfg config.Config, skip SkipTargets) error {
+func goLint(ctx context.Context, cfg config.Config) error {
 	for _, module := range cfg.GoModules {
-		if skip.ShouldSkip("GoLint", module) {
+		if cfg.SkipTargets.ShouldSkip("GoLint", module) {
 			continue
 		}
 		sg.Logger(ctx).Printf("running golangci-lint --fix in %s...", module)
@@ -39,9 +39,9 @@ func goLint(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	return nil
 }
 
-func goFormat(ctx context.Context, cfg config.Config, skip SkipTargets) error {
+func goFormat(ctx context.Context, cfg config.Config) error {
 	for _, module := range cfg.GoModules {
-		if skip.ShouldSkip("GoFormat", module) {
+		if cfg.SkipTargets.ShouldSkip("GoFormat", module) {
 			continue
 		}
 		sg.Logger(ctx).Printf("applying gofmt in %s...", module)
@@ -54,9 +54,9 @@ func goFormat(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	return nil
 }
 
-func goTest(ctx context.Context, cfg config.Config, skip SkipTargets) error {
+func goTest(ctx context.Context, cfg config.Config) error {
 	for _, module := range cfg.GoModules {
-		if skip.ShouldSkip("GoTest", module) {
+		if cfg.SkipTargets.ShouldSkip("GoTest", module) {
 			continue
 		}
 		sg.Logger(ctx).Printf("running go test in %s...", module)
@@ -69,9 +69,9 @@ func goTest(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 	return nil
 }
 
-func goVulncheck(ctx context.Context, cfg config.Config, skip SkipTargets) error {
+func goVulncheck(ctx context.Context, cfg config.Config) error {
 	for _, module := range cfg.GoModules {
-		if skip.ShouldSkip("GoVulncheck", module) {
+		if cfg.SkipTargets.ShouldSkip("GoVulncheck", module) {
 			continue
 		}
 		sg.Logger(ctx).Printf("running govulncheck in %s...", module)
