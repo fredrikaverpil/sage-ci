@@ -17,32 +17,32 @@ const (
 type Config struct {
 	// Ecosystem modules - explicit paths.
 	// E.g. []string{".", "subdir/mylib"}
-	GoModules []string `yaml:"go_modules"`
+	GoModules []string
 	// E.g. []string{"python", "tools/cli"}
-	PythonModules []string `yaml:"python_modules"`
+	PythonModules []string
 	// E.g. []string{"lua/plugin"}
-	LuaModules []string `yaml:"lua_modules"`
+	LuaModules []string
 
 	// Workflow platform to generate for.
 	// Default: "github"
-	Platform Platform `yaml:"platform"`
+	Platform []Platform
 
 	// Workflow selection (default: all enabled if empty).
 	// E.g. []string{"sage-ci-stale", "sage-ci-release"}
 	// You can also use a string, and if found, the workflow will be skipped.
-	SkipWorkflows []string `yaml:"skip"`
+	SkipWorkflows []string
 
 	// Options
 	// default: ["stable"]
-	GoVersions []string `yaml:"go_versions"`
+	GoVersions []string
 	// default: ["3.12"]
-	PythonVersions []string `yaml:"python_versions"`
+	PythonVersions []string
 	// default: ["ubuntu-latest"]
-	OSVersions []string `yaml:"os_versions"`
+	OSVersions []string
 
 	// OutputDir is the directory where workflows will be written.
 	// Platform-specific defaults apply if empty.
-	OutputDir string `yaml:"output_dir"`
+	OutputDir string
 }
 
 // WithDefaults returns a copy of the config with default values applied.
@@ -51,10 +51,13 @@ func (c Config) WithDefaults() Config {
 		c.GoVersions = []string{"stable"}
 	}
 	if len(c.PythonVersions) == 0 {
-		c.PythonVersions = []string{"3.12"}
+		c.PythonVersions = []string{"3.14"}
 	}
 	if len(c.OSVersions) == 0 {
 		c.OSVersions = []string{"ubuntu-latest"}
+	}
+	if len(c.Platform) == 0 {
+		c.Platform = []Platform{PlatformGitHub}
 	}
 	return c
 }

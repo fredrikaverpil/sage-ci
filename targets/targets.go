@@ -84,7 +84,7 @@ func (s SkipTargets) ShouldSkip(target, module string) bool {
 
 // RunSerial runs all mutating targets serially for configured ecosystems.
 func RunSerial(ctx context.Context, cfg config.Config, skip SkipTargets) error {
-	var deps []interface{}
+	var deps []any
 	if len(cfg.GoModules) > 0 {
 		deps = append(deps,
 			func(ctx context.Context) error { return goModTidy(ctx, cfg, skip) },
@@ -112,7 +112,7 @@ func RunSerial(ctx context.Context, cfg config.Config, skip SkipTargets) error {
 
 // RunParallel runs all non-mutating targets in parallel for configured ecosystems.
 func RunParallel(ctx context.Context, cfg config.Config, skip SkipTargets) error {
-	var deps []interface{}
+	var deps []any
 	if len(cfg.GoModules) > 0 {
 		deps = append(deps,
 			func(ctx context.Context) error { return goTest(ctx, cfg, skip) },
