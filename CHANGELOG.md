@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/fredrikaverpil/sage-ci/compare/v0.2.0...v0.3.0) (2026-01-04)
+
+
+### Features
+
+* **tool:** add ts_query_ls ([4421fcb](https://github.com/fredrikaverpil/sage-ci/commit/4421fcb81289a006c64116d8e48d379b9550f6a1))
+
 ## [0.2.0](https://github.com/fredrikaverpil/sage-ci/compare/v0.1.3...v0.2.0) (2026-01-04)
 
 
