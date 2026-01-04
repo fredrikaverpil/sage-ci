@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/fredrikaverpil/sage-ci/compare/v0.1.1...v0.1.2) (2026-01-04)
+
+
+### Bug Fixes
+
+* add missing target ([529d500](https://github.com/fredrikaverpil/sage-ci/commit/529d500ac656407fa655c7e32b173dd10bca8111))
+
 ## [0.1.1](https://github.com/fredrikaverpil/sage-ci/compare/v0.1.0...v0.1.1) (2026-01-04)
 
 
