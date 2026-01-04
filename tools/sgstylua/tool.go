@@ -16,7 +16,7 @@ import (
 const name = "stylua"
 
 // renovate: datasource=github-releases depName=JohnnyMorganz/StyLua
-const version = "2.0.1"
+const version = "2.3.1"
 
 const osWindows = "windows"
 
