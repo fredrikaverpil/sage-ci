@@ -68,18 +68,6 @@ make python-format
 > Install Makefile shell completions to see all targets in your terminal by
 > typing out `make` followed by a space and then tab.
 
-## Adding custom targets
-
-Add a function to `.sage/sagefile.go` or a new `.go` file in `.sage/`:
-
-```go
-func MyTarget(ctx context.Context) error {
-    return sg.Command(ctx, "echo", "hello").Run()
-}
-```
-
-Run `go run ./.sage` to regenerate the Makefile, then use `make my-target`.
-
 ## Updating sage-ci
 
 Either wait until the `sage-ci-sync.yml` workflow runs, or run manually:
@@ -109,8 +97,39 @@ Each tool lives in `tools/<toolname>/tool.go` and follows this pattern:
 const version = "1.2.3"
 ```
 
-Renovate will automatically create PRs when new versions are available.
+Renovate will automatically create PRs when new versions are available. The
+sage-ci sync workflow will make sure that sage-ci gets updated and enjoys these
+version bumps.
 
 When adding new tools, use the appropriate
 [datasource](https://docs.renovatebot.com/modules/datasource/) for version
 lookups.
+
+## Adding custom targets to your project
+
+Add a function to `.sage/sagefile.go` or a new `.go` file in `.sage/`:
+
+```go
+func MyTarget(ctx context.Context) error {
+    return sg.Command(ctx, "echo", "hello").Run()
+}
+```
+
+Run `go run ./.sage` to regenerate the Makefile, then use `make my-target`.
+
+## Adding to core sage-ci
+
+## Targets
+
+1. Add target function in `targets/` (see `targets/go.go` for examples)
+2. Register in `allTargets` in `targets/generate.go`
+3. Optionally add to `RunSerial` or `RunParallel` in `targets/targets.go`
+4. If needed, add tools in `tools/` (see `tools/sggolangcilint/tool.go`)
+
+## Workflow templates
+
+1. Add `.yml.tmpl` file in `workflows/github/templates/<ecosystem>/` or
+   `generic/`
+2. Use `templateData` fields from `workflows/github/render.go` for templating
+3. Output naming: `generic/*.yml.tmpl` → `sage-ci-*.yml`,
+   `<ecosystem>/*.yml.tmpl` → `sage-ci-<ecosystem>-*.yml`
