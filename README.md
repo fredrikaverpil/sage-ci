@@ -8,6 +8,12 @@ several projects. Features include:
 - Sage-powered tools declaration
 - CI workflow templates
 
+> [!NOTE]
+>
+> This repo is archived because I experienced issues on Windows with Makefiles.
+> In an attempt to get rid of the use of Makefiles, I created
+> [bld](https://github.com/fredrikaverpil/bld).
+
 ## Quickstart
 
 ### Bootstrap to your project
@@ -115,7 +121,8 @@ func MyTarget(ctx context.Context) error {
 }
 ```
 
-Run `cd .sage && go run ./...` to regenerate the Makefile, then use `make my-target`.
+Run `cd .sage && go run ./...` to regenerate the Makefile, then use
+`make my-target`.
 
 ## Adding to core sage-ci
 
