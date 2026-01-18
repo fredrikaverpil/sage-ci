@@ -19,7 +19,7 @@ const (
 )
 
 // renovate: datasource=github-releases depName=golangci/golangci-lint
-const version = "2.7.1"
+const version = "2.7.2"
 
 // Command returns an *exec.Cmd for golangci-lint.
 func Command(ctx context.Context, args ...string) *exec.Cmd {
